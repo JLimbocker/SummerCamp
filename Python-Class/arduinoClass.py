@@ -9,10 +9,10 @@ from pygame.locals import *
 
 class Arduino(object):
     config_mode = False
-    ext_pins = -1
-    ext_servo = -1:0
-    ext_motor = -1:0
-    ext_pwm = -1:0
+    ext_pins = [-1]
+    ext_servo = {-1:0}
+    ext_motor = {-1:0}
+    ext_pwm = {-1:0}
     ard_ser = serial.Serial(None, 115200)
 
     def __init__(self, port_name):
@@ -104,7 +104,7 @@ class Arduino(object):
     def attachServo(self, pin_num):
         if self.ext_pins.count(pin_num) == 0 and pin_num < 16 and pin_num > -1:
             self.ext_pins.append(pin_num)
-            self.ext_servo.append(pin_num:90)
+            self.ext_servo[pin_num] = 90
         elif self.ext_pins.count(pin_num) > 0 and pin_num < 16 and pin_num > -1:
             print "ERR: This pin already attached!"
         else:
@@ -122,7 +122,7 @@ class Arduino(object):
     def attachExtPWM(self, pin_num):
         if self.ext_pins.count(pin_num) == 0 and pin_num < 16 and pin_num > -1:
             self.ext_pins.append(pin_num)
-            self.ext_pwm.append(pin_num:50)
+            self.ext_pwm[pin_num] = 50
         elif self.ext_pins.count(pin_num) > 0 and pin_num < 16 and pin_num > -1:
             print "ERR: This pin already attached!"
         else:
@@ -140,7 +140,7 @@ class Arduino(object):
     def attachMotor(self, pin_num):
         if self.ext_pins.count(pin_num) == 0 and pin_num < 16 and pin_num > -1:
             self.ext_pins.append(pin_num)
-            self.ext_motor.append(pin_num:0)
+            self.ext_motor[pin_num]=0
         elif self.ext_pins.count(pin_num) > 0 and pin_num < 16 and pin_num > -1:
             print "ERR: This pin already attached!"
         else:
@@ -244,15 +244,15 @@ class PyUtil(object):
 
         print("joystick_count") 
         print(joystick_count) 
-        print("­­­­­­­­­­­­­­--------------") 
+        print("­­­­­­­­­­­­­­**************") 
 
         print("numaxes") 
         print(numaxes) 
-        print("­­­­­­­­­­­­­­--------------") 
+        print("­­­­­­­­­­­­­­**************") 
 
         print("numbuttons") 
         print(numbuttons) 
-        print("­­­­­­­­­­­­­­--------------")
+        print("­­­­­­­­­­­­­­**************")
 
         loopQuit = False 
         while loopQuit == False: 
