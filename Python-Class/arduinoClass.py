@@ -178,14 +178,16 @@ class Arduino(object):
 
 class PyUtil(object):
 
+	
+
     def __init__(self):
         pygame.joystick.init()  # initialize pygame to read controllers
-        joystick_count = pygame.joystick.get_count()  # get 1 joystick, number 0
-        joystick = pygame.joystick.Joystick(0)  # assign the first controller
-        joystick.init()  # initialize the first controller for reading
+        self.joystick_count = pygame.joystick.get_count()  # get 1 joystick, number 0
+        self.joystick = pygame.joystick.Joystick(0)  # assign the first controller
+        self.joystick.init()  # initialize the first controller for reading
 
-        numaxes = joystick.get_numaxes() # return the number of axes on the controller
-        numbuttons = joystick.get_numbuttons() # return number of buttons on the controller
+        self.numaxes = self.joystick.get_numaxes() # return the number of axes on the controller
+        self.numbuttons = self.joystick.get_numbuttons() # return number of buttons on the controller
 
     def getAxisValue(self, axis):
         # axis values:
@@ -193,7 +195,7 @@ class PyUtil(object):
         # 1 = Left joystick up to down values -1.0 to 0.99
         # 2 = Right joystick left to right values -1.0 to 0.99
         # 3 = Right joystick up to down values -1.0 to 0.99
-        return joystick.get_axis(axis)
+        return self.joystick.get_axis(axis)
 
     def getButtonValue(self, button):
         # button values:
@@ -216,7 +218,7 @@ class PyUtil(object):
         # 16 = PS
         # 17 = 
         # 18 =
-        return joystick.get_button(button)
+        return self.joystick.get_button(button)
 
 
     def constrain(self, value, low_bound, high_bound):
@@ -242,46 +244,49 @@ class PyUtil(object):
 
         interval = 0.01
 
-        print("joystick_count") 
-        print(joystick_count) 
-        print("­­­­­­­­­­­­­­**************") 
+        print("joystick_count")
+        print(self.joystick_count)
+        print("______________")
 
         print("numaxes") 
-        print(numaxes) 
-        print("­­­­­­­­­­­­­­**************") 
+        print(self.numaxes) 
+        print("______________")
 
-        print("numbuttons") 
-        print(numbuttons) 
-        print("­­­­­­­­­­­­­­**************")
-
+        print("numbuttons")
+        print(self.numbuttons)
+        print("______________")
+        
         loopQuit = False 
         while loopQuit == False: 
-
+		
             # test joystick axes 
+            
+            print
 
-            # outstr = "" 
+            outstr = "" 
 
-            # for i in range(0,4): 
+            for i in range(0,4):
+            	axis = self.joystick.get_axis(i)
+            	outstr = outstr + str(i) + ":" + str(axis) + "|"
 
-            # axis = joystick.get_axis(i) 
+            print(outstr) 
 
-            # outstr = outstr + str(i) + ":" + str(axis) + "|" 
+            # test controller buttons 
+            
+            outstr = "" 
 
-            # print(outstr) 
+            for i in range(0,self.numbuttons): 
 
-            # test controller buttons outstr = "" 
+                button = self.joystick.get_button(i) 
 
-            for i in range(0,numbuttons): 
-
-                button = joystick.get_button(i) 
-
-                outstr = outstr + str(i) + ":" + str(button) + "|" print(outstr) 
+                outstr = outstr + str(i) + ":" + str(button) + "|" 
+            
+            print(outstr) 
 
             for event in pygame.event.get(): 
 
                 if event.type == QUIT: 
-
-                loopQuit = True 
+					loopQuit = True
 
                 elif event.type == pygame.KEYDOWN: 
                     if event.key == pygame.K_ESCAPE: 
