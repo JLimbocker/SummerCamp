@@ -5,35 +5,35 @@ This firmware serves as the interface between an Arduino microcontroller and a R
 ## Compatible Commands
 
 ### Reads
-#### Analog Read
++ #### Analog Read
 `A {pin number}`
-#### Digital Read
++ #### Digital Read
 `D {pin number}`
 ### Writes
-#### Analog Write
++ #### Analog Write
 `a {pin number} {value}`
-#### Digital Write
++ #### Digital Write
 `d {pin number} {value}`
 ### Servo
-#### Move
++ #### Move
 `S {servo id} {position}`
-#### Attach (config mode)
++ #### Attach (config mode)
 `S {servo id} {pin number}`
 ### Motor
-#### Move
++ #### Move
 `M {motor id} {speed}`
-#### Attach (config mode)
++ #### Attach (config mode)
 `M {motor id} {pin number}`
 ### Tone generation
 't {pin number} {duration}'
 ### Configuration mode
-#### Enter
++ #### Enter
 `C 1`
-#### Exit
++ #### Exit
 `C 2`
-#### Set pin mode
++ #### Set pin mode
 `P {pin number} {mode}`
-#### Attach Motor
++ #### Attach Motor
 `M {motor id} {pin number}`
-#### Attach Servo
++ #### Attach Servo
 `S {servo id} {pin number}`
