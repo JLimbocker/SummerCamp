@@ -20,7 +20,7 @@ arduino.exitConfigMode()
 # loop
 
 
-"""
+
 #HOT CROSS BUNS
 
 notes = [NOTE_A4, NOTE_G4, NOTE_F4, 0, NOTE_A4, NOTE_G4, NOTE_F4, 0, NOTE_F4, NOTE_F4, NOTE_F4, NOTE_F4, NOTE_G4, NOTE_G4, NOTE_G4, NOTE_G4, NOTE_A4, NOTE_G4, NOTE_F4, 0]
@@ -54,7 +54,7 @@ noteTypes = [16/3, 16/3, 8, 16/3, 16/3,
 			16, 16/3, 16, 16, 8,
 			16, 8, 16, 8, 16, 
 			16/3]
-
+"""
 
 for note, t in zip(notes, noteTypes):
 	arduino.tone(buzzerPin, note, 1500/t)
