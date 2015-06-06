@@ -71,7 +71,7 @@ class Arduino(object):
         middle = self.readUntil(self.ard_ser, ' ')
         rest = self.recvMsg()
         print front + " " + middle + " " + rest
-        return middle
+        return int(middle)
 
     def digitalWrite(self, pin_num, value):
         msg = "d " + str(pin_num) + " " + str(value) + " ;"
@@ -85,7 +85,7 @@ class Arduino(object):
         middle = self.readUntil(self.ard_ser, ' ')
         rest = self.recvMsg()
         print front + " " + middle + " " + rest
-        return middle
+        return int(middle)
 
     def pinMode(self, pin_num, value):
         msg = "P " + str(pin_num) + " " + str(value) + " ;"
