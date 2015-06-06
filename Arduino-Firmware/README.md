@@ -56,10 +56,10 @@ General form of communication is call and response.  Pi sends command, terminate
   + Returns:
     + `S {servo id} {position} ;`
 + Attach (config mode)
-  + When in configuration mode, this function attaches a servo to the specified pin.  Pin restrictions are handled by the Python interface.
-  + `S {servo id} {pin number} ;`
+  + When in configuration mode, this function attaches an Adafruit PWM controller at the specified address.  Pin restrictions are handled by the Python interface.  Address should be formatted in hex.
+  + `S {address} ;`
   + Returns:
-    + `S {servo id} {pin number} ;`
+    + `S {address} ;`
 
 ### Motor
 + Move
@@ -69,10 +69,13 @@ General form of communication is call and response.  Pi sends command, terminate
     + `M {motor id} {speed} ;`
 
 + Attach (config mode)
-  + When in configuration mode, this function attaches a motor to the specified pin.  Pin restrictions are handled by the Python interface.
-  + `M {motor id} {pin number} ;`
+  + When in configuration mode, this function attaches an Adafruit PWM controller at the specified address.  Pin restrictions are handled by the Python interface.  Address should be formatted in hex.
+  + Motor type:
+    + VEX 29: type 1 (50Hz)
+    + Talon : type 2 (333Hz)
+  + `M {address} {motor type} ;`
   + Returns:
-    + `M {motor id} {pin number} ;`
+    + `M {address} {motor type} ;`
 
 ### Tone generation
   + Generates a beep for a piezo buzzer on the specified pin for the given duration.
