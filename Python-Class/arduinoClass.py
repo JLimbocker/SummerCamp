@@ -146,12 +146,37 @@ class Arduino(object):
     ard_ser = serial.Serial(None, 115200)
     util = PyUtil()
 
-    def __init__(self, port_name):
-        self.ard_ser.port = port_name
-        self.ard_ser.timeout = None
-        self.ard_ser.open()
-        time.sleep(3)
 
+
+    # Constructor
+    # Creates an Arduino object
+    def __init__(self):
+        self.ard_ser.port = None
+        self.ard_ser.timeout = None
+
+    # open(self, port_name)
+    # Opens a serial connection on the given port
+    #
+    # Parameters:
+    # port_name - the port on which to open the serial port
+    def open(self, port_name):
+        self.ard_ser.port = port_name;
+        self.ard_ser.open();
+        time.sleep(3);
+    # close(self)
+    # Closes the serial port
+    #
+    # Parameters:
+    # none
+    def close(self):
+        self.ard_ser.close()
+
+    # readUntil(self, file_obj, delim_char)
+    # Reads from file_obj until delim_char
+    #
+    # Parameters:
+    # file_obj - the stream from which to read data
+    # delim_char - the delimiting character
     def readUntil(self, file_obj, delim_char):
         string_read = ""
         while file_obj.inWaiting() == 0:
@@ -165,6 +190,12 @@ class Arduino(object):
                 pass
         return string_read
 
+    # readUntil_file(self, file_obj, delim_char)
+    # Not actually sure what this is for.
+    #
+    # Parameters:
+    # file_obj - the stream from which to read data
+    # delim_char - the delimiting character
     def readUntil_file(self, file_obj, delim_char):
         string_read = ""
         while True:
@@ -178,12 +209,27 @@ class Arduino(object):
                 pass
         return string_read
 
+    # sendMsg(self, msg)
+    # Sends some monosodium glutemate over the serial connection
+    #
+    # Parameters:
+    # msg - the message to be sent
     def sendMsg(self, msg):
         self.ard_ser.write(msg)
 
+    # recvMsg(self, msg)
+    # Receives a message over the serial connection.  Reads until new line character.
+    #
+    # Parameters:
+    # none
     def recvMsg(self):
         return self.readUntil(self.ard_ser, '\n')
 
+    # enterConfigMode(self)
+    # Puts the Arduino into config mode
+    #
+    # Parameters:
+    # none
     def enterConfigMode(self):
         if self.config_mode == False:
             self.sendMsg("C 1 ;")
@@ -195,6 +241,11 @@ class Arduino(object):
         else:
             print "Already in config mode"
 
+    # exitConfigMode(self)
+    # Takes the Arduino out of config mode
+    #
+    # Parameters:
+    # none
     def exitConfigMode(self):
         if self.config_mode == True:
             self.sendMsg("C 0 ;")
@@ -203,12 +254,22 @@ class Arduino(object):
             print "Exited config mode"
         else:
             print "Not in config mode"
-
+    # analogWrite(self, pin_num, value)
+    # Writes a PWM signal to the given pin
+    #
+    # Parameters:
+    # pin_num - the pin number to write to
+    # value - the 8 bit PWM value
     def analogWrite(self, pin_num, value):
         msg = "a " + str(pin_num) + " " + str(value) + " ;"
         self.sendMsg(msg)
         self.recvMsg()
 
+    # analogRead(self, pin_num)
+    # Reads the ADC value on the given analog pin
+    #
+    # Parameters:
+    # pin_num - the pin to read
     def analogRead(self, pin_num):
         msg = "A " + str(pin_num) + " ;"
         self.sendMsg(msg)
@@ -218,11 +279,22 @@ class Arduino(object):
         # print front + " " + middle + " " + rest
         return int(middle)
 
+    # digitalWrite(self, pin_num, value)
+    # Writes a digital value to the specified pin
+    #
+    # Parameters:
+    # pin_num - the pin to write
+    # value - the value to write
     def digitalWrite(self, pin_num, value):
         msg = "d " + str(pin_num) + " " + str(value) + " ;"
         self.ard_ser.write(msg)
         self.recvMsg()
 
+    # digitalRead(self, pin_num)
+    # Reads the digital value of the sprcified pin
+    #
+    # Parameters:
+    # pin_num - the pin to read
     def digitalRead(self, pin_num):
         msg = "D " + str(pin_num) + " ;"
         self.sendMsg(msg)
@@ -232,24 +304,73 @@ class Arduino(object):
         # print front + " " + middle + " " + rest
         return int(middle)
 
+    # pinMode(self, pin_num, value)
+    # Set the pin mode.  Must be used from config mode
+    #
+    # Parameters:
+    # pin_num - the pin to change
+    # value - the mode to set the pin to
     def pinMode(self, pin_num, value):
         msg = "P " + str(pin_num) + " " + str(value) + " ;"
         self.sendMsg(msg)
         print self.recvMsg()
 
+    # delay(self, seconds)
+    # Waits for 'seconds' seconds.
+    #
+    # Parameters:
+    # seconds - the time to wait
     def delay(self, seconds):
         time.sleep(seconds)
 
+    # tone(self, pin_num, value, duration)
+    # plays a tone on the given pin
+    #
+    # Parameters:
+    # pin_num - the pin to play the tone on
+    # value - the frequency of the tone
+    # duration - the duration of the tone
     def tone(self, pin_num, value, duration):
         msg = "t " + str(pin_num) + " " + str(value) + " " + str(duration) + " ;"
         self.ard_ser.write(msg)
         print self.recvMsg()
 
+    # readFingerprint(self)
+    # SPECIAL FIRMWARE REQUIRED
+    # This function requests a fingerprint scan from the Arduino
+    #
+    # Parameters:
+    # none
+    #
+    # Returns:
+    # fingerID - the id of the fingerprint, or -1 if bad read
+    def readFingerprint(self):
+        msg = "f ;"
+        self.sendMsg(msg)
+        front = self.readUntil(self.ard_ser, ' ')
+        fingerID = self.readUntil(self.ard_ser, ' ')
+        confidence = self.recvMsg()
+        if(confidence < 100):
+            return fingerID
+        return -1
+
+    # writeToScreen(self, row_num, message)
+    # Writes 'message' to the LCD screen
+    #
+    # Parameters:
+    # row_num - the row of the LCD to write to
+    # message - the message to write
     def writeToScreen(self, row_num, message):
         msg = "L " + str(row_num) + " " + message + " ;"
         self.ard_ser.write(msg)
         print self.recvMsg()
 
+    # servoWrite(self, pin_num, value)
+    # Writes a position to a servo specified by pin_num
+    #
+    # Parameters:
+    # pin_num - the index of the servo
+    # value - the position to write
     def servoWrite(self, pin_num, value):
         if value <= 180 and value >= 0:
             value = map(value, 0, 180, 200, 425)
@@ -259,6 +380,12 @@ class Arduino(object):
         else:
             print "ERR: Invalid pin number or servo value"
 
+    # servoWriteMicroseconds(self, pin_num, value)
+    # Writes a pulse width to a servo
+    #
+    # Parameters:
+    # pin_num - the index of the servo
+    # value - the pulse width
     def servoWriteMicroseconds(self, pin_num, value):
         if value <= 3000 and value >= 200:
             value = map(value, 200, 3000, 50, 625)
@@ -268,6 +395,12 @@ class Arduino(object):
         else:
             print "ERR: Invalid pin number or servo value"
 
+    # setPWM(self, pin_num, value)
+    # Sets the PWM value for a channel on the PWM board
+    #
+    # Parameters:
+    # pin_num - the index of the motor on the PWM board
+    # value - the pwm value
     def setPWM(self, pin_num, value):
         if value <= 2000 and value >= 0:
             msg = "M " + str(pin_num) + " " + str(value) + " ;"
@@ -276,6 +409,12 @@ class Arduino(object):
         else:
             print "ERR: Invalid pin number or PWM value"
 
+    # setVEX(self, pin_num, value)
+    # Sets the PWM value for a VEX 29 Motor driver
+    #
+    # Parameters:
+    # pin_num - the index of the motor on the PWM board
+    # value - the pwm value
     def setVEX(self, pin_num, value):
         value += 500
         if value <= 1000 and value >= 0:
@@ -286,6 +425,12 @@ class Arduino(object):
         else:
             print "ERR: Invalid pin number or PWM value"
 
+    # setTalon(self, pin_num, value)
+    # Sets the PWM value for a Talon Motor driver
+    #
+    # Parameters:
+    # pin_num - the index of the motor on the PWM board
+    # value - the pwm value
     def setTalon(self, pin_num, value):
         value += 500
         if value <= 1000 and value >= 0:
@@ -296,6 +441,11 @@ class Arduino(object):
         else:
             print "ERR: Invalid pin number or PWM value"
 
+    # getGyro(self, axis)
+    # Reads the gyroscope
+    #
+    # Parameters:
+    # axis - the axis to read
     def getGyro(self, axis):
         msg = "y ;"
         self.ard_ser.write(msg)
@@ -314,6 +464,11 @@ class Arduino(object):
         else:
             print "ERR: Invalid axis number"
 
+    # getAccel(self, axis)
+    # Reads the accelerometer
+    #
+    # Parameters:
+    # axis - the axis to read
     def getAccel(self, axis):
         msg = "g ;"
         self.ard_ser.write(msg)
@@ -332,11 +487,21 @@ class Arduino(object):
         else:
             print "ERR: Invalid axis number"
 
+    # setupIMU(self)
+    # Enables the I2C IMU
+    #
+    # Parameters:
+    # none
     def setupIMU(self):
         msg = "I ;"
         self.sendMsg(msg)
         self.recvMsg()
 
+    # configurePWMBoards(self, mode)
+    # Sets up the Adafruit PWM boards for use with either of the motor controllers or servos.
+    #
+    # Parameters:
+    # mode - the mode to set the PWM board to
     def configurePWMBoards(self, mode):
         #text-based setup system
         if mode == 0:
