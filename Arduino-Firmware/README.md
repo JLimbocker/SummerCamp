@@ -74,6 +74,18 @@ General form of communication is call and response.  Pi sends command, terminate
   + Returns:
     + `g {x-acc} {y-acc} {z-acc} ;`
 
+### Compass
+  + Gets a reading from the Compass.
+  + `c ;`
+  + Returns:
+    + `c {x-mag} {y-mag} {z-mag} ;`
+    
+### Gyroscope
+  + Gets a reading from the gyro.
+  + `y ;`
+  + Returns:
+    + `y {x-gyro} {y-gyro} {z-gyro} ;`
+
 ### Configuration mode
 + Enter
   + `C 1 ;`
