@@ -55,10 +55,28 @@ class Arduino(object):
         self.sendMsg(msg)
         print self.recvMsg()
 
+    def analogRead(self, pin_num):
+        msg = "A " + str(pin_num) + " ;"
+        self.sendMsg(msg)
+        front = self.readUntil(self.ard_ser, ' ')
+        middle = self.readUntil(self.ard_ser, ' ')
+        rest = self.recvMsg()
+        print front + " " + middle + " " + rest
+        return middle
+
     def digitalWrite(self, pin_num, value):
         msg = "d " + str(pin_num) + " " + str(value) + ";"
         self.ard_ser.write(msg)
         self.recvMsg()
+
+    def digitalRead(self, pin_num):
+        msg = "D " + str(pin_num) + " ;"
+        self.sendMsg(msg)
+        front = self.readUntil(self.ard_ser, ' ')
+        middle = self.readUntil(self.ard_ser, ' ')
+        rest = self.recvMsg()
+        print front + " " + middle + " " + rest
+        return middle
 
     def pinMode(self, pin_num, value):
         msg = "P " + str(pin_num) + " " + str(value) + ";"
@@ -72,6 +90,7 @@ class Arduino(object):
         msg = "t " + str(pin_num) + " " + str(value) + ";"
         self.ard_ser.write(msg)
         self.recvMsg()
+
 
 class PyUtil(object):
 
@@ -134,12 +153,16 @@ class PyUtil(object):
         return (value - from_low) * (to_high - to_low) / (from_high - from_low) + to_low
 
 
-arduino = Arduino("/dev/tty.usbserial-A5027JS4")
+arduino = Arduino("/dev/tty.usbserial-A5027J57")
+
 arduino.enterConfigMode()
-arduino.pinMode(9, 1)
+arduino.pinMode(9, 2)
+arduino.pinMode(3, 0)
 arduino.exitConfigMode()
+
 while True:
-    arduino.digitalWrite(9, 1)
-    arduino.delay(100)
-    arduino.digitalWrite(9, 0)
+    if arduino.digitalRead(9) == "0":
+        arduino.digitalWrite(3, 1)
+    else:
+        arduino.digitalWrite(3, 0)
 
