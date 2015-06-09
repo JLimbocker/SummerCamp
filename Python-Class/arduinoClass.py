@@ -173,6 +173,70 @@ class Arduino(object):
         else:
             print "ERR: Invalid pin"
 
+
+    
+class PyUtil(object):
+
+    def __init__(self):
+        pygame.joystick.init()  # initialize pygame to read controllers
+        joystick_count = pygame.joystick.get_count()  # get 1 joystick, number 0
+        joystick = pygame.joystick.Joystick(0)  # assign the first controller
+        joystick.init()  # initialize the first controller for reading
+
+        numaxes = joystick.get_numaxes() # return the number of axes on the controller
+        numbuttons = joystick.get_numbuttons() # return number of buttons on the controller
+
+    def getAxisValue(self, axis):
+        # axis values:
+        # 0 = Left joystick left to right values -1.0 to 0.99
+        # 1 = Left joystick up to down values -1.0 to 0.99
+        # 2 = Right joystick left to right values -1.0 to 0.99
+        # 3 = Right joystick up to down values -1.0 to 0.99
+        return joystick.get_axis(axis)
+
+    def getButtonValue(self, button):
+        # button values:
+        # 0 = Select
+        # 1 =
+        # 2 = 
+        # 3 = Start
+        # 4 = Digital Up
+        # 5 = Digital Right
+        # 6 = Digital Down
+        # 7 = Digitial Left
+        # 8 = L2 (digital mode)
+        # 9 = R2 (digital mode)
+        # 10 = R1
+        # 11 = L1
+        # 12 = Triangle
+        # 13 = Circle
+        # 14 = X
+        # 15 = Square
+        # 16 = PS
+        # 17 = 
+        # 18 =
+        return joystick.get_button(button)
+
+
+    def constrain(self, value, low_bound, high_bound):
+        # make sure bounds are in the correct order
+        if low_bound > high_bound:
+            temp = low_bound
+            low_bound = high_bound
+            high_bound = temp
+
+        if value < low_bound:
+            return low_bound
+        elif value > high_bound:
+            return high_bound
+        else:
+            return value
+
+    def map(self, value, from_low, from_high, to_low, to_high):
+        return (value - from_low) * (to_high - to_low) / (from_high - from_low) + to_low
+
+
+
 arduino = Arduino("/dev/tty.usbserial-A5027J57")
 arduino.enterConfigMode()
 arduino.pinMode(9, 2)
