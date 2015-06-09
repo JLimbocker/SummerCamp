@@ -13,7 +13,7 @@ class Arduino(object):
     def readUntil(self, file_obj, delim_char):
         curr_char = ''
         string_read = ""
-        while curr_char != delim_char and self.ard_ser.inWaiting() > 0:
+        while curr_char != delim_char:
             string_read += curr_char
             # print curr_char
             curr_char = file_obj.read()
