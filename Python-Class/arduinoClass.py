@@ -54,10 +54,28 @@ class Arduino(object):
         self.sendMsg(msg)
         print self.recvMsg()
 
+    def analogRead(self, pin_num):
+        msg = "A " + str(pin_num) + " ;"
+        self.sendMsg(msg)
+        front = self.readUntil(self.ard_ser, ' ')
+        middle = self.readUntil(self.ard_ser, ' ')
+        rest = self.recvMsg()
+        print front + " " + middle + " " + rest
+        return middle
+
     def digitalWrite(self, pin_num, value):
         msg = "d " + str(pin_num) + " " + str(value) + ";"
         self.ard_ser.write(msg)
         self.recvMsg()
+
+    def digitalRead(self, pin_num):
+        msg = "D " + str(pin_num) + " ;"
+        self.sendMsg(msg)
+        front = self.readUntil(self.ard_ser, ' ')
+        middle = self.readUntil(self.ard_ser, ' ')
+        rest = self.recvMsg()
+        print front + " " + middle + " " + rest
+        return middle
 
     def pinMode(self, pin_num, value):
         msg = "P " + str(pin_num) + " " + str(value) + ";"
@@ -72,11 +90,13 @@ class Arduino(object):
         self.ard_ser.write(msg)
         self.recvMsg()
 
-arduino = Arduino("/dev/tty.usbserial-A5027JS4")
+arduino = Arduino("/dev/tty.usbserial-A5027J57")
 arduino.enterConfigMode()
-arduino.pinMode(9, 1)
+arduino.pinMode(9, 0)
+arduino.pinMode(3, 2)
 arduino.exitConfigMode()
 while True:
-    arduino.tone(9, 440)
-    arduino.delay(1)
-
+    if arduino.digitalRead(9) == "1":
+        arduino.digitalWrite(3, 1)
+    else:
+        arduino.digitalWrite(3, 0)
