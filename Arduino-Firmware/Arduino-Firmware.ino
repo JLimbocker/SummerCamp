@@ -4,8 +4,13 @@ int index, pin, value;
 
 void setup()
 {
+<<<<<<< HEAD
   Serial.begin(9600);
 
+=======
+  Serial.begin(115200);
+  
+>>>>>>> origin/master
 }
 
 void loop()
@@ -69,10 +74,7 @@ void configure()
       {
 
 
-        case 'A':
-          setPinMode();
-          break;
-        case 'D':
+        case 'P':
           setPinMode();
           break;
         case 'M':
@@ -163,6 +165,7 @@ void writeAnalogPin()
 void writeDigitalPin()
 {
   response = "d ";
+  //Serial.print("d ");
   index = command.indexOf(' ');
   command = command.substring(index+1);
   while(command.length() > 1)
@@ -208,6 +211,7 @@ void setPinMode()
   response = "P " ;
   index = command.indexOf(' ');
   command = command.substring(index+1);
+  //Serial.print("P ");
   while(command.length() > 1)
   {
 
@@ -215,10 +219,13 @@ void setPinMode()
     index = command.indexOf(' ');
     pin = command.substring(0, index).toInt();
     command = command.substring(index+1);
+    //Serial.print(pin);
 
     index = command.indexOf(' ');
     value = command.substring(0, index).toInt();
     command = command.substring(index+1);
+    //Serial.print(value);
+    
     //command.trim();
     if(value == 1)
     {
@@ -232,7 +239,10 @@ void setPinMode()
     {
       pinMode(pin, OUTPUT)
     }
+    
     response += String(pin) + String(" ") + String(value) + String(" ");
+    
+    break;
   }
   response += ";";
 
