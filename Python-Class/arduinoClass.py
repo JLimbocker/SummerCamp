@@ -6,23 +6,34 @@ class Arduino(object):
 
     def __init__(self, port_name):
         self.ard_ser.port = port_name
-        self.ard_ser.timeout = 0.01
+        self.ard_ser.timeout = None
         self.ard_ser.open()
         time.sleep(3)
 
     def readUntil(self, file_obj, delim_char):
-        curr_char = ''
         string_read = ""
-        while curr_char != delim_char:
-            string_read += curr_char
-            # print curr_char
+        while file_obj.inWaiting() == 0:
+            print "waiting for chars"
+        print num_chars
+        while True:
+            print "------------------------"
+            print "before read."
             curr_char = file_obj.read()
+            print "after read"
+            if curr_char == delim_char:
+                print "delim found"
+                break;
+            else:
+                string_read += curr_char
+                pass
+            print "after cond., curr_char is: " + curr_char
         return string_read
 
     def sendMsg(self, msg):
         self.ard_ser.write(msg)
 
     def recvMsg(self):
+        print "before return"
         return self.readUntil(self.ard_ser, '\n')
 
     def enterConfigMode(self):
@@ -58,8 +69,11 @@ class Arduino(object):
 
     def digitalWrite(self, pin_num, value):
         msg = "d " + str(pin_num) + " " + str(value)
+        print "before write"
         self.ard_ser.write(msg)
+        print "after write, before read"
         self.recvMsg()
+        print "after read"
             # print "NO_RESP_ERR"
             # time.sleep(1)
 
