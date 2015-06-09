@@ -1,3 +1,11 @@
+/*
+TO-DO:
+servo/PWM driver
+fingerprint sensor
+IMU
+
+*/
+
 String command;
 String response;
 int index, pin, value;
