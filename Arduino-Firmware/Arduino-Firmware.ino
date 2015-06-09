@@ -5,7 +5,7 @@ int index, pin, value;
 void setup()
 {
   Serial.begin(115200);
-  
+
 }
 
 void loop()
@@ -49,6 +49,7 @@ void loop()
   if(response.length() > 1)
   {
     Serial.println(response);
+    Serial.flush();
     response = "";
   }
 }
@@ -85,12 +86,11 @@ void configure()
           //readAccelerometer();
           break;
         case 'C':
-          Serial.print("C ");
           if(command[2] == '0')
           {
             command = "";
             Serial.flush();
-            Serial.println("0 ;");
+            Serial.println("C 0 ;");
             return;
           }
           break;
@@ -100,6 +100,7 @@ void configure()
     if(response.length() > 1)
     {
       Serial.println(response);
+      Serial.flush();
       response = "";
     }
   }
@@ -220,7 +221,7 @@ void setPinMode()
     value = command.substring(0, index).toInt();
     command = command.substring(index+1);
     //Serial.print(value);
-    
+
     //command.trim();
     if(value == 1)
     {
@@ -230,9 +231,9 @@ void setPinMode()
     {
       pinMode(pin, INPUT);
     }
-    
+
     response += String(pin) + String(" ") + String(value) + String(" ");
-    
+
     break;
   }
   response += ";";
