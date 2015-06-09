@@ -165,6 +165,24 @@ class Arduino(object):
         else:
             print "ERR: Invalid pin number or PWM value"
 
+    def getMotorVal(self, pin_num):
+        if pin_num in self.ext_motor:
+            return self.ext_motor[pin_num]
+        else:
+            print "ERR: Invalid pin"
+
+    def getPWMVal(self, pin_num):
+        if pin_num in self.ext_pwm:
+            return self.ext_pwm[pin_num]
+        else:
+            print "ERR: Invalid pin"
+
+    def getServoVal(self, pin_num):
+        if pin_num in self.ext_servo:
+            return self.ext_servo[pin_num]
+        else:
+            print "ERR: Invalid pin"
+
 arduino = Arduino("/dev/tty.usbserial-A5027J57")
 arduino.enterConfigMode()
 arduino.pinMode(9, 2)
