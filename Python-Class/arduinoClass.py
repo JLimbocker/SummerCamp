@@ -1,8 +1,7 @@
 '''
 TO-DO:
 Separate utilities/main into .py files / add import
-Motor/Servo attach (lists)
-Motor/Servo move
+gyro, accel, magnetometer
 '''
 
 import serial, time
@@ -105,9 +104,6 @@ class Arduino(object):
         if self.ext_pins.count(pin_num) == 0 and pin_num < 16 and pin_num > -1:
             self.ext_pins.append(pin_num)
             self.ext_servo.append(pin_num:90)
-            msg = "M " + str(pin_num) + " ;"
-            self.ard_ser.write(msg)
-            self.recvMsg()
         elif self.ext_pins.count(pin_num) > 0 and pin_num < 16 and pin_num > -1:
             print "ERR: This pin already attached!"
         else:
@@ -126,9 +122,6 @@ class Arduino(object):
         if self.ext_pins.count(pin_num) == 0 and pin_num < 16 and pin_num > -1:
             self.ext_pins.append(pin_num)
             self.ext_pwm.append(pin_num:50)
-            msg = "M " + str(pin_num) + " ;"
-            self.ard_ser.write(msg)
-            self.recvMsg()
         elif self.ext_pins.count(pin_num) > 0 and pin_num < 16 and pin_num > -1:
             print "ERR: This pin already attached!"
         else:
@@ -147,9 +140,6 @@ class Arduino(object):
         if self.ext_pins.count(pin_num) == 0 and pin_num < 16 and pin_num > -1:
             self.ext_pins.append(pin_num)
             self.ext_motor.append(pin_num:0)
-            msg = "M " + str(pin_num) + " ;"
-            self.ard_ser.write(msg)
-            self.recvMsg()
         elif self.ext_pins.count(pin_num) > 0 and pin_num < 16 and pin_num > -1:
             print "ERR: This pin already attached!"
         else:
@@ -158,7 +148,7 @@ class Arduino(object):
     def setMotor(self, pin_num, value):
         value += 500
         if pin_num in self.ext_motor and value <= 1000 and value >= 0:
-            msg = "K " + str(pin_num) + " " + str(value) + ";"
+            msg = "M " + str(pin_num) + " " + str(value) + ";"
             self.ard_ser.write(msg)
             self.recvMsg()
             self.ext_motor[pin_num] = value
@@ -167,7 +157,7 @@ class Arduino(object):
 
     def getMotorVal(self, pin_num):
         if pin_num in self.ext_motor:
-            return self.ext_motor[pin_num]
+            return self.ext_motor[pin_num]-500
         else:
             print "ERR: Invalid pin"
 
