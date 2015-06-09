@@ -92,11 +92,11 @@ class Arduino(object):
 
 arduino = Arduino("/dev/tty.usbserial-A5027J57")
 arduino.enterConfigMode()
-arduino.pinMode(9, 0)
-arduino.pinMode(3, 2)
+arduino.pinMode(9, 2)
+arduino.pinMode(3, 0)
 arduino.exitConfigMode()
 while True:
-    if arduino.digitalRead(9) == "1":
+    if arduino.digitalRead(9) == "0":
         arduino.digitalWrite(3, 1)
     else:
         arduino.digitalWrite(3, 0)

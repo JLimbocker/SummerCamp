@@ -225,11 +225,15 @@ void setPinMode()
     //command.trim();
     if(value == 1)
     {
-      pinMode(pin, OUTPUT);
+      pinMode(pin, INPUT);
+    }
+    else if(value == 2)
+    {
+      pinMode(pin, INPUT_PULLUP);
     }
     else
     {
-      pinMode(pin, INPUT);
+      pinMode(pin, OUTPUT)
     }
 
     response += String(pin) + String(" ") + String(value) + String(" ");
