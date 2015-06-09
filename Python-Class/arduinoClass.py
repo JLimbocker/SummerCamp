@@ -65,15 +65,18 @@ class Arduino(object):
         self.recvMsg()
 
     def delay(self, seconds):
-        # print time.time()
+        time.sleep(seconds)
 
+    def tone(self, pin_num, value):
+        msg = "t " + str(pin_num) + " " + str(value) + ";"
+        self.ard_ser.write(msg)
+        self.recvMsg()
 
-arduino = Arduino("/dev/tty.usbserial-A5027J57")
+arduino = Arduino("/dev/tty.usbserial-A5027JS4")
 arduino.enterConfigMode()
 arduino.pinMode(9, 1)
 arduino.exitConfigMode()
 while True:
-    arduino.digitalWrite(9, 1)
-    arduino.delay(500)
-    arduino.digitalWrite(9, 0)
-    arduino.delay(5000)
+    arduino.tone(9, 440)
+    arduino.delay(1)
+
