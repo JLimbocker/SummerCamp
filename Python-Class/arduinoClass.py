@@ -181,7 +181,11 @@ class PyUtil(object):
 	
 
     def __init__(self):
-    	pygame.init()
+		pass
+	
+	
+	def initializeBluetooth(self):
+		pygame.init()
         pygame.joystick.init()  # initialize pygame to read controllers
         self.joystick_count = pygame.joystick.get_count()  # get 1 joystick, number 0
         self.joystick = pygame.joystick.Joystick(0)  # assign the first controller

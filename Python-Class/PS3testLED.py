@@ -10,6 +10,8 @@ bluePin = 9
 greenPin = 10
 
 my_util = PyUtil()
+my_util.initializeBluetooth()
+
 my_arduino = Arduino("/dev/ttyUSB1")
 
 my_arduino.digitalWrite(greenPin,0)
