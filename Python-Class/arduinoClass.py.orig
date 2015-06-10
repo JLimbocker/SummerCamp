@@ -173,6 +173,7 @@ class Arduino(object):
         else:
             print "ERR: Invalid pin"
 
+<<<<<<< HEAD
     def getGyro(self, axis):
         msg = "y ;"
         self.ard_ser.write(msg)
@@ -208,6 +209,18 @@ class Arduino(object):
             return z_val
         else:
             print "ERR: Invalid axis number"
+
+arduino = Arduino("/dev/tty.usbserial-A5027J57")
+arduino.enterConfigMode()
+arduino.pinMode(9, 2)
+arduino.pinMode(3, 0)
+arduino.exitConfigMode()
+while True:
+    if arduino.digitalRead(9) == "0":
+        arduino.digitalWrite(3, 1)
+    else:
+        arduino.digitalWrite(3, 0)
+=======
 
 
 class PyUtil(object):
@@ -349,3 +362,4 @@ class PyUtil(object):
         pygame.quit() 
         sys.exit() 
 
+>>>>>>> efc4062ec5b3f45a45f2f352fd11f993dac35945
