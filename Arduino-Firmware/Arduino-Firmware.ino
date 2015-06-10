@@ -5,7 +5,17 @@ fingerprint sensor
 IMU
 
 */
+#include <Wire.h>
+#include <Adafruit_Sensor.h>
+#include <Adafruit_LSM303_U.h>
+#include <Adafruit_L3GD20_U.h>
 
+//IMU Declarations
+Adafruit_LSM303_Accel_Unified accel = Adafruit_LSM303_Accel_Unified(54321);
+Adafruit_LSM303_Mag_Unified mag = Adafruit_LSM303_Mag_Unified(12345);
+Adafruit_L3GD20_Unified gyro = Adafruit_L3GD20_Unified(20);
+
+// Other Decs
 String command;
 String response;
 int index, pin, value;
@@ -13,7 +23,6 @@ int index, pin, value;
 void setup()
 {
   Serial.begin(115200);
-
 }
 
 void loop()
@@ -46,7 +55,7 @@ void loop()
         //generateTone();
         break;
       case 'g':
-        //readAccelerometer();
+        readAccel();
         break;
       case 'C':
         configure();
@@ -91,7 +100,10 @@ void configure()
           //generateTone();
           break;
         case 'g':
-          //readAccelerometer();
+
+          break;
+        case 'I':
+          setupIMU();
           break;
         case 'C':
           if(command[2] == '0')
@@ -200,6 +212,16 @@ void moveServo()
   response += ";";
 }
 
+void readAccel()
+{
+  sensors_event_t event;
+  accel.getEvent(&event);
+  response = "g " + String(event.acceleration.x) + " " + String(event.acceleration.y) + " " + String(event.acceleration.z) + " ;";
+  command = "";
+}
+
+
+
 void attachDCMotor()
 {
   response += "M ;";
@@ -241,7 +263,7 @@ void setPinMode()
     }
     else
     {
-      pinMode(pin, OUTPUT)
+      pinMode(pin, OUTPUT);
     }
 
     response += String(pin) + String(" ") + String(value) + String(" ");
@@ -249,5 +271,31 @@ void setPinMode()
     break;
   }
   response += ";";
+
+}
+
+void setupIMU()
+{
+  int accInit = 1;
+  int gyrInit = 1;
+  int magInit = 1;
+  if(!accel.begin())
+  {
+    /* There was a problem detecting the ADXL345 ... check your connections */
+    accInit = 0;
+  }
+  if(!mag.begin())
+  {
+    /* There was a problem detecting the LSM303 ... check your connections */
+    magInit = 0;
+  }
+  gyro.enableAutoRange(true);
+  /* Initialise the sensor */
+  if(!gyro.begin())
+  {
+    /* There was a problem detecting the L3GD20 ... check your connections */
+    gyrInit = 0;
+  }
+  response = "I " + String(accInit) + " " + String(magInit) + " " + String(gyrInit) + " ;";
 
 }
