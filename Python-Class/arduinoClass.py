@@ -182,18 +182,16 @@ class PyUtil(object):
 
     def __init__(self):
 		pass
-	
-	
-	def initializeBluetooth(self):
-		pygame.init()
-        pygame.joystick.init()  # initialize pygame to read controllers
-        self.joystick_count = pygame.joystick.get_count()  # get 1 joystick, number 0
-        self.joystick = pygame.joystick.Joystick(0)  # assign the first controller
-        self.joystick.init()  # initialize the first controller for reading
 
-        self.numaxes = self.joystick.get_numaxes() # return the number of axes on the controller
-        self.numbuttons = self.joystick.get_numbuttons() # return number of buttons on the controller
+    def initializeBluetooth(self):
+        pygame.init()
+        pygame.joystick.init() # initialize pygame to read controllers
+        self.joystick_count = pygame.joystick.get_count() # get 1 joystick, number 0
+        self.joystick = pygame.joystick.Joystick(0) # assign the first controller
+        self.joystick.init() # initialize first controller for reading
 
+        self.numaxes = self.joystick.get_numaxes()
+        self.numbuttons = self.joystick.get_numbuttons() 
     def getAxisValue(self, axis):
         # axis values:
         # 0 = Left joystick left to right values -1.0 to 0.99
