@@ -212,7 +212,7 @@ class Arduino(object):
 
 class PyUtil(object):
 
-	
+
 
     def __init__(self):
 		pass
@@ -225,7 +225,7 @@ class PyUtil(object):
         self.joystick.init() # initialize first controller for reading
 
         self.numaxes = self.joystick.get_numaxes()
-        self.numbuttons = self.joystick.get_numbuttons() 
+        self.numbuttons = self.joystick.get_numbuttons()
     def getAxisValue(self, axis):
         # axis values:
         # 0 = Left joystick left to right values -1.0 to 0.99
@@ -239,7 +239,7 @@ class PyUtil(object):
         # button values:
         # 0 = Select
         # 1 =
-        # 2 = 
+        # 2 =
         # 3 = Start
         # 4 = Digital Up
         # 5 = Digital Right
@@ -254,7 +254,7 @@ class PyUtil(object):
         # 14 = X
         # 15 = Square
         # 16 = PS
-        # 17 = 
+        # 17 =
         # 18 =
         pygame.event.pump()
         return self.joystick.get_button(button)
@@ -279,7 +279,7 @@ class PyUtil(object):
 
     def testPS(self):
         screen = pygame.display.set_mode((400,300))
-        pygame.display.set_caption('Hello World') 
+        pygame.display.set_caption('Hello World')
 
         interval = 0.01
 
@@ -287,65 +287,64 @@ class PyUtil(object):
         print(self.joystick_count)
         print("______________")
 
-        print("numaxes") 
-        print(self.numaxes) 
+        print("numaxes")
+        print(self.numaxes)
         print("______________")
 
         print("numbuttons")
         print(self.numbuttons)
         print("______________")
-        
-        loopQuit = False 
-        while loopQuit == False: 
-		
-            # test joystick axes 
-            
+
+        loopQuit = False
+        while loopQuit == False:
+
+            # test joystick axes
+
             print
 
-            outstr = "" 
+            outstr = ""
 
             for i in range(0,4):
             	axis = self.getAxisValue(i)
             	outstr = outstr + str(i) + ":" + str(axis) + "|"
 
-            print(outstr) 
+            print(outstr)
 
-            # test controller buttons 
-            
-            outstr = "" 
+            # test controller buttons
 
-            for i in range(0,self.numbuttons): 
+            outstr = ""
 
-                button = self.joystick.get_button(i) 
+            for i in range(0,self.numbuttons):
 
-                outstr = outstr + str(i) + ":" + str(button) + "|" 
-            
-            print(outstr) 
+                button = self.joystick.get_button(i)
 
-            for event in pygame.event.get(): 
+                outstr = outstr + str(i) + ":" + str(button) + "|"
 
-                if event.type == QUIT: 
+            print(outstr)
+
+            for event in pygame.event.get():
+
+                if event.type == QUIT:
 					loopQuit = True
 
-                elif event.type == pygame.KEYDOWN: 
-                    if event.key == pygame.K_ESCAPE: 
-                        loopQuit = True 
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        loopQuit = True
 
-              # other event tests, but polling seems to work better in main loop 
-              # if event.type == pygame.JOYBUTTONDOWN: 
-                # print("joy button down") 
-              # if event.type == pygame.JOYBUTTONUP: 
-                # print("joy button up") 
-              # if event.type == pygame.JOYBALLMOTION: 
-                # print("joy ball motion") 
-              # axis motion is movement of controller 
-              # dominates events when used 
-              # if event.type == pygame.JOYAXISMOTION: 
-                # print("joy axis motion") 
+              # other event tests, but polling seems to work better in main loop
+              # if event.type == pygame.JOYBUTTONDOWN:
+                # print("joy button down")
+              # if event.type == pygame.JOYBUTTONUP:
+                # print("joy button up")
+              # if event.type == pygame.JOYBALLMOTION:
+                # print("joy ball motion")
+              # axis motion is movement of controller
+              # dominates events when used
+              # if event.type == pygame.JOYAXISMOTION:
+                # print("joy axis motion")
 
-            # pygame.display.update() 
-            time.sleep(interval) 
+            # pygame.display.update()
+            time.sleep(interval)
 
-        pygame.quit() 
-        sys.exit() 
-
+        pygame.quit()
+        sys.exit()
