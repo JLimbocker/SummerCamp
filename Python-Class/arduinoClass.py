@@ -209,6 +209,11 @@ class Arduino(object):
         else:
             print "ERR: Invalid axis number"
 
+    def setupIMU(self):
+        msg = "I ;"
+        self.sendMsg(msg)
+        self.recvMsg()
+
 
 class PyUtil(object):
 
