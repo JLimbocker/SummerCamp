@@ -37,6 +37,18 @@ General form of communication is call and response.  Pi sends command, terminate
     + `d {pin number} {value} ;`
     + `d {pin number} {value} {pin number} {value} ... ;`
 
+### PWM Device
++ Set Pulse Width
+  +
+  +
++ Set PWM freq
+  +
+  +
++ Attach (config mode)
+  +  
+  +
+
+
 ### Servo
 + Move
   + Moves the servo to the specified position, between 0 and 180 degrees.
@@ -79,7 +91,7 @@ General form of communication is call and response.  Pi sends command, terminate
   + `c ;`
   + Returns:
     + `c {x-mag} {y-mag} {z-mag} ;`
-    
+
 ### Gyroscope
   + Gets a reading from the gyro.
   + `y ;`
@@ -108,3 +120,7 @@ General form of communication is call and response.  Pi sends command, terminate
   + `S {servo id} {pin number} ;`
   + Returns:
     + `S {servo id} {pin number} ;`
++ Setup IMU
+  + 'I ;'
+  + Returns:
+    + 'I {accel success} {mag success} {gyro success} ;'
