@@ -1,7 +1,6 @@
 '''
 TO-DO:
 Separate utilities/main into .py files / add import
-gyro, accel, magnetometer
 '''
 
 import serial, time
@@ -172,6 +171,42 @@ class Arduino(object):
             return self.ext_servo[pin_num]
         else:
             print "ERR: Invalid pin"
+
+    def getGyro(self, axis):
+        msg = "y ;"
+        self.ard_ser.write(msg)
+        prefix = self.readUntil(self.ard_ser, ' ')
+        x_val = self.readUntil(self.ard_ser, ' ')
+        y_val = self.readUntil(self.ard_ser, ' ')
+        z_val = self.readUntil(self.ard_ser, ' ')
+        suffix = self.recvMsg()
+        print prefix + " " + x_val + " " + y_val + " " + z_val " " + suffix
+        if axis == 0:
+            return x_val
+        elif axis == 1:
+            return y_val
+        elif axis == 2:
+            return z_val
+        else:
+            print "ERR: Invalid axis number"
+
+    def getAccel(self, axis):
+        msg = "g ;"
+        self.ard_ser.write(msg)
+        prefix = self.readUntil(self.ard_ser, ' ')
+        x_val = self.readUntil(self.ard_ser, ' ')
+        y_val = self.readUntil(self.ard_ser, ' ')
+        z_val = self.readUntil(self.ard_ser, ' ')
+        suffix = self.recvMsg()
+        print prefix + " " + x_val + " " + y_val + " " + z_val " " + suffix
+        if axis == 0:
+            return x_val
+        elif axis == 1:
+            return y_val
+        elif axis == 2:
+            return z_val
+        else:
+            print "ERR: Invalid axis number"
 
 arduino = Arduino("/dev/tty.usbserial-A5027J57")
 arduino.enterConfigMode()
