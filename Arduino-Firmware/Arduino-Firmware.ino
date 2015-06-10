@@ -2,7 +2,6 @@
 TO-DO:
 servo/PWM driver
 fingerprint sensor
-IMU
 
 */
 #include <Wire.h>
@@ -56,6 +55,12 @@ void loop()
         break;
       case 'g':
         readAccel();
+        break;
+      case 'y':
+        readGyro();
+        break;
+      case 'c':
+        readMag();
         break;
       case 'C':
         configure();
@@ -220,6 +225,21 @@ void readAccel()
   command = "";
 }
 
+void readGyro()
+{
+  sensors_event_t event;
+  gyro.getEvent(&event);
+  response = "y " + String(event.gyro.x) + " " + String(event.gyro.y) + " " + String(event.gyro.z) + " ;";
+  command = "";
+}
+
+void readMag()
+{
+  sensors_event_t event;
+  mag.getEvent(&event);
+  response = "c " + String(event.magnetic.x) + " " + String(event.magnetic.y) + " " + String(event.magnetic.z) + " ;";
+  command = "";
+}
 
 
 void attachDCMotor()
