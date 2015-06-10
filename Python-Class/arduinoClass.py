@@ -61,9 +61,9 @@ class Arduino(object):
             print "Not in config mode"
 
     def analogWrite(self, pin_num, value):
-        msg = "a " + str(pin_num) + " " + str(value) + ";"
+        msg = "a " + str(pin_num) + " " + str(value) + " ;"
         self.sendMsg(msg)
-        print self.recvMsg()
+        self.recvMsg()
 
     def analogRead(self, pin_num):
         msg = "A " + str(pin_num) + " ;"
@@ -181,6 +181,7 @@ class PyUtil(object):
 	
 
     def __init__(self):
+    	pygame.init()
         pygame.joystick.init()  # initialize pygame to read controllers
         self.joystick_count = pygame.joystick.get_count()  # get 1 joystick, number 0
         self.joystick = pygame.joystick.Joystick(0)  # assign the first controller
@@ -195,6 +196,7 @@ class PyUtil(object):
         # 1 = Left joystick up to down values -1.0 to 0.99
         # 2 = Right joystick left to right values -1.0 to 0.99
         # 3 = Right joystick up to down values -1.0 to 0.99
+        pygame.event.pump()
         return self.joystick.get_axis(axis)
 
     def getButtonValue(self, button):
@@ -218,6 +220,7 @@ class PyUtil(object):
         # 16 = PS
         # 17 = 
         # 18 =
+        pygame.event.pump()
         return self.joystick.get_button(button)
 
 
@@ -266,7 +269,7 @@ class PyUtil(object):
             outstr = "" 
 
             for i in range(0,4):
-            	axis = self.joystick.get_axis(i)
+            	axis = self.getAxisValue(i)
             	outstr = outstr + str(i) + ":" + str(axis) + "|"
 
             print(outstr) 
@@ -310,19 +313,3 @@ class PyUtil(object):
         pygame.quit() 
         sys.exit() 
 
-
-
-my_util = PyUtil()
-
-my_util.testPS()
-
-# arduino = Arduino("/dev/tty.usbserial-A5027J57")
-# arduino.enterConfigMode()
-# arduino.pinMode(9, 2)
-# arduino.pinMode(3, 0)
-# arduino.exitConfigMode()
-# while True:
-#     if arduino.digitalRead(9) == "0":
-#         arduino.digitalWrite(3, 1)
-#     else:
-#         arduino.digitalWrite(3, 0)
