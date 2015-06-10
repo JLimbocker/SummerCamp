@@ -121,6 +121,6 @@ General form of communication is call and response.  Pi sends command, terminate
   + Returns:
     + `S {servo id} {pin number} ;`
 + Setup IMU
-  + 'I ;'
+  + `I ;`
   + Returns:
-    + 'I {accel success} {mag success} {gyro success} ;'
+    + `I {accel success} {mag success} {gyro success} ;`
