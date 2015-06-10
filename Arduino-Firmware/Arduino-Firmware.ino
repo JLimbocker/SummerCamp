@@ -43,7 +43,7 @@ void loop()
         moveServo();
         break;
       case 't':
-        //generateTone();
+        generateTone();
         break;
       case 'g':
         //readAccelerometer();
@@ -269,7 +269,7 @@ void setPinMode()
     }
     else
     {
-      pinMode(pin, OUTPUT);e
+      pinMode(pin, OUTPUT);
     }
 
     response += String(pin) + String(" ") + String(value) + String(" ");
