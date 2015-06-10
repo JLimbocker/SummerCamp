@@ -4,7 +4,8 @@ Separate utilities/main into .py files / add import
 gyro, accel, magnetometer
 '''
 
-import serial, time
+import pygame, sys, serial, time
+from pygame.locals import *
 
 class Arduino(object):
     config_mode = False
@@ -174,7 +175,7 @@ class Arduino(object):
             print "ERR: Invalid pin"
 
 
-    
+
 class PyUtil(object):
 
     def __init__(self):
@@ -235,15 +236,88 @@ class PyUtil(object):
     def map(self, value, from_low, from_high, to_low, to_high):
         return (value - from_low) * (to_high - to_low) / (from_high - from_low) + to_low
 
+    def testPS(self):
+        screen = pygame.display.set_mode((400,300))
+        pygame.display.set_caption('Hello World') 
+
+        interval = 0.01
+
+        print("joystick_count") 
+        print(joystick_count) 
+        print("­­­­­­­­­­­­­­--------------") 
+
+        print("numaxes") 
+        print(numaxes) 
+        print("­­­­­­­­­­­­­­--------------") 
+
+        print("numbuttons") 
+        print(numbuttons) 
+        print("­­­­­­­­­­­­­­--------------")
+
+        loopQuit = False 
+        while loopQuit == False: 
+
+            # test joystick axes 
+
+            # outstr = "" 
+
+            # for i in range(0,4): 
+
+            # axis = joystick.get_axis(i) 
+
+            # outstr = outstr + str(i) + ":" + str(axis) + "|" 
+
+            # print(outstr) 
+
+            # test controller buttons outstr = "" 
+
+            for i in range(0,numbuttons): 
+
+                button = joystick.get_button(i) 
+
+                outstr = outstr + str(i) + ":" + str(button) + "|" print(outstr) 
+
+            for event in pygame.event.get(): 
+
+                if event.type == QUIT: 
+
+                loopQuit = True 
+
+                elif event.type == pygame.KEYDOWN: 
+                    if event.key == pygame.K_ESCAPE: 
+                        loopQuit = True 
+
+              # other event tests, but polling seems to work better in main loop 
+              # if event.type == pygame.JOYBUTTONDOWN: 
+                # print("joy button down") 
+              # if event.type == pygame.JOYBUTTONUP: 
+                # print("joy button up") 
+              # if event.type == pygame.JOYBALLMOTION: 
+                # print("joy ball motion") 
+              # axis motion is movement of controller 
+              # dominates events when used 
+              # if event.type == pygame.JOYAXISMOTION: 
+                # print("joy axis motion") 
+
+            # pygame.display.update() 
+            time.sleep(interval) 
+
+        pygame.quit() 
+        sys.exit() 
 
 
-arduino = Arduino("/dev/tty.usbserial-A5027J57")
-arduino.enterConfigMode()
-arduino.pinMode(9, 2)
-arduino.pinMode(3, 0)
-arduino.exitConfigMode()
-while True:
-    if arduino.digitalRead(9) == "0":
-        arduino.digitalWrite(3, 1)
-    else:
-        arduino.digitalWrite(3, 0)
+
+my_util = PyUtil()
+
+my_util.testPS()
+
+# arduino = Arduino("/dev/tty.usbserial-A5027J57")
+# arduino.enterConfigMode()
+# arduino.pinMode(9, 2)
+# arduino.pinMode(3, 0)
+# arduino.exitConfigMode()
+# while True:
+#     if arduino.digitalRead(9) == "0":
+#         arduino.digitalWrite(3, 1)
+#     else:
+#         arduino.digitalWrite(3, 0)
