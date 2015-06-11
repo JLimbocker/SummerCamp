@@ -214,12 +214,46 @@ void writeDigitalPin()
 
 void runDCMotor()
 {
-  response += ";";
+  int motorNum;
+  int pulseWidth;
+  response = "M " ;
+
+  index = command.indexOf(' ');
+  command = command.substring(index+1);
+
+  index = command.indexOf(' ');
+  motorNum = command.substring(0, index).toInt();
+  command = command.substring(index+1);
+
+  index = command.indexOf(' ');
+  pulseWidth = command.substring(0, index).toInt();
+  command = command.substring(index+1);
+
+  motor.setPWM(motorNum, 0, pulseWidth);
+
+  response += String(motorNum) + " " + String(pulseWidth) + " ;";
 }
 
 void moveServo()
 {
-  response += ";";
+  int servoNum;
+  int pulseWidth;
+  response = "S " ;
+
+  index = command.indexOf(' ');
+  command = command.substring(index+1);
+
+  index = command.indexOf(' ');
+  servoNum = command.substring(0, index).toInt();
+  command = command.substring(index+1);
+
+  index = command.indexOf(' ');
+  pulseWidth = command.substring(0, index).toInt();
+  command = command.substring(index+1);
+
+  servo.setPWM(servoNum, 0, pulseWidth);
+
+  response += String(servoNum) + " " + String(pulseWidth) + " ;";
 }
 
 void readAccel()
@@ -251,7 +285,7 @@ void attachDCMotor()
 {
   int address;
   int type;
-  char* endptr;
+  char** endptr;
   response = "M " ;
   index = command.indexOf(' ');
   command = command.substring(index+1);
@@ -272,6 +306,9 @@ void attachDCMotor()
 
 void attachServo()
 {
+  int address;
+  int type;
+  char** endptr;
   index = command.indexOf(' ');
   command = command.substring(index+1);
   index = command.indexOf(' ');
