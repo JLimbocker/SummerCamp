@@ -57,7 +57,7 @@ void loop()
   if(response.length() > 1)
   {
     Serial.println(response);
-    Serial.flush();
+    //Serial.flush();
     response = "";
   }
 }
