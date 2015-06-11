@@ -74,7 +74,7 @@ class Arduino(object):
         return middle
 
     def digitalWrite(self, pin_num, value):
-        msg = "d " + str(pin_num) + " " + str(value) + ";"
+        msg = "d " + str(pin_num) + " " + str(value) + " ;"
         self.ard_ser.write(msg)
         self.recvMsg()
 
@@ -88,7 +88,7 @@ class Arduino(object):
         return middle
 
     def pinMode(self, pin_num, value):
-        msg = "P " + str(pin_num) + " " + str(value) + ";"
+        msg = "P " + str(pin_num) + " " + str(value) + " ;"
         self.sendMsg(msg)
         self.recvMsg()
 
@@ -96,7 +96,7 @@ class Arduino(object):
         time.sleep(seconds)
 
     def tone(self, pin_num, value):
-        msg = "t " + str(pin_num) + " " + str(value) + ";"
+        msg = "t " + str(pin_num) + " " + str(value) + " ;"
         self.ard_ser.write(msg)
         self.recvMsg()
 
@@ -111,7 +111,7 @@ class Arduino(object):
 
     def moveServo(self, pin_num, value):
         if pin_num in self.ext_servo and value <= 180 and value >= 0:
-            msg = "S " + str(pin_num) + " " + str(value) + ";"
+            msg = "S " + str(pin_num) + " " + str(value) + " ;"
             self.ard_ser.write(msg)
             self.recvMsg()
             self.ext_servo[pin_num] = value
@@ -129,7 +129,7 @@ class Arduino(object):
 
     def setPWM(self, pin_num, value):
         if pin_num in self.ext_pwm and value <= 100 and value >= 0:
-            msg = "P " + str(pin_num) + " " + str(value) + ";"
+            msg = "P " + str(pin_num) + " " + str(value) + " ;"
             self.ard_ser.write(msg)
             self.recvMsg()
             self.ext_pwm[pin_num] = value
@@ -148,7 +148,7 @@ class Arduino(object):
     def setMotor(self, pin_num, value):
         value += 500
         if pin_num in self.ext_motor and value <= 1000 and value >= 0:
-            msg = "M " + str(pin_num) + " " + str(value) + ";"
+            msg = "M " + str(pin_num) + " " + str(value) + " ;"
             self.ard_ser.write(msg)
             self.recvMsg()
             self.ext_motor[pin_num] = value
@@ -181,7 +181,7 @@ class Arduino(object):
         y_val = self.readUntil(self.ard_ser, ' ')
         z_val = self.readUntil(self.ard_ser, ' ')
         suffix = self.recvMsg()
-        print prefix + " " + x_val + " " + y_val + " " + z_val " " + suffix
+        print prefix + " " + x_val + " " + y_val + " " + z_val + " " + suffix
         if axis == 0:
             return x_val
         elif axis == 1:
@@ -199,7 +199,7 @@ class Arduino(object):
         y_val = self.readUntil(self.ard_ser, ' ')
         z_val = self.readUntil(self.ard_ser, ' ')
         suffix = self.recvMsg()
-        print prefix + " " + x_val + " " + y_val + " " + z_val " " + suffix
+        print prefix + " " + x_val + " " + y_val + " " + z_val + " " + suffix
         if axis == 0:
             return x_val
         elif axis == 1:
