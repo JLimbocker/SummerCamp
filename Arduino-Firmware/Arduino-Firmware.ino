@@ -213,6 +213,10 @@ void generateTone()
     command = command.substring(index+1);
     
     tone(pin, value, duration);
+    
+    delay(duration*1.3);
+    noTone(pin);
+    
     response += String(pin) + String(" ") + String(value) + String(" ");
   }
   response += ";";
