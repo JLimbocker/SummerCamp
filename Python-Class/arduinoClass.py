@@ -259,7 +259,7 @@ class Arduino(object):
     def tone(self, pin_num, value, duration):
         msg = "t " + str(pin_num) + " " + str(value) + " " + str(duration) + " ;"
         self.ard_ser.write(msg)
-        self.recvMsg()
+        print self.recvMsg()
 
     def servoWrite(self, pin_num, value):
         if value <= 180 and value >= 0:

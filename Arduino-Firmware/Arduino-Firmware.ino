@@ -1,3 +1,4 @@
+
 /*
 TO-DO:
 servo/PWM driver
@@ -56,7 +57,7 @@ void loop()
         moveServo();
         break;
       case 't':
-        //generateTone();
+        generateTone();
         break;
       case 'g':
         readAccel();
@@ -107,7 +108,7 @@ void configure()
           attachServo();
           break;
         case 't':
-          //generateTone();
+          generateTone();
           break;
         case 'g':
 
@@ -362,6 +363,40 @@ void setPinMode()
   }
   response += ";";
 
+}
+
+void generateTone()
+{
+  response = "t ";
+  
+  index = command.indexOf(' ');
+  command = command.substring(index+1);
+  
+  while(command.length() > 1)
+  {
+    
+    //command.trim();
+    index = command.indexOf(' ');
+    pin = command.substring(0, index).toInt();
+    command = command.substring(index+1);
+    //command.trim();
+    index = command.indexOf(' ');
+    value = command.substring(0, index).toInt();
+    command = command.substring(index+1);
+    //command.trim();
+    index = command.indexOf(' ');
+    int duration = command.substring(0, index).toInt();
+    command = command.substring(index+1);
+    
+    tone(pin, value, duration);
+    
+    delay(duration*1.3);
+    noTone(pin);
+    
+    response += String(pin) + String(" ") + String(value) + String(" ") + String(duration) + String(" ");
+  }
+  response += ";";
+  
 }
 
 void setupIMU()

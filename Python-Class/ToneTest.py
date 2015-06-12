@@ -6,8 +6,8 @@ from arduinoClass import *
 
 
 
-buzzerPin = 8
-arduino = Arduino("/dev/ttyUSB2")
+buzzerPin = 12
+arduino = Arduino("/dev/tty.usbserial-A5027IWF")
 
 # setup
 arduino.enterConfigMode()
