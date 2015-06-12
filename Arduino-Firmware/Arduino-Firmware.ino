@@ -139,6 +139,7 @@ void configure()
 
 void readAnalogPin()
 {
+  response = "A ";
   while(command.length() > 1)
   {
     index = command.indexOf(' ');
