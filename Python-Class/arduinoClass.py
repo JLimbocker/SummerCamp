@@ -231,7 +231,7 @@ class Arduino(object):
         front = self.readUntil(self.ard_ser, ' ')
         middle = self.readUntil(self.ard_ser, ' ')
         rest = self.recvMsg()
-        print front + " " + middle + " " + rest
+        # print front + " " + middle + " " + rest
         return int(middle)
 
     def digitalWrite(self, pin_num, value):
@@ -245,7 +245,7 @@ class Arduino(object):
         front = self.readUntil(self.ard_ser, ' ')
         middle = self.readUntil(self.ard_ser, ' ')
         rest = self.recvMsg()
-        print front + " " + middle + " " + rest
+        # print front + " " + middle + " " + rest
         return int(middle)
 
     def pinMode(self, pin_num, value):
