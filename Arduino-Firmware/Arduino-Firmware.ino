@@ -313,6 +313,7 @@ void attachServo()
   command = command.substring(index+1);
   index = command.indexOf(' ');
   address = strtoul(command.substring(0, index).c_str(), endptr, 16);
+  
   command = command.substring(index+1);
   servo = Adafruit_PWMServoDriver(address);
   servo.begin();

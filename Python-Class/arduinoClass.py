@@ -3,221 +3,10 @@ TO-DO:
 Separate utilities/main into .py files / add import
 '''
 
-import pygame, sys, serial, time
-from pygame.locals import *
-
-class Arduino(object):
-    config_mode = False
-    ext_pins = [-1]
-    ext_servo = {-1:0}
-    ext_motor = {-1:0}
-    ext_pwm = {-1:0}
-    ard_ser = serial.Serial(None, 115200)
-
-    def __init__(self, port_name):
-        self.ard_ser.port = port_name
-        self.ard_ser.timeout = None
-        self.ard_ser.open()
-        time.sleep(3)
-
-    def readUntil(self, file_obj, delim_char):
-        string_read = ""
-        while file_obj.inWaiting() == 0:
-            pass
-        while True:
-            curr_char = file_obj.read()
-            if curr_char == delim_char:
-                break
-            else:
-                string_read += curr_char
-                pass
-        return string_read
-
-    def sendMsg(self, msg):
-        self.ard_ser.write(msg)
-
-    def recvMsg(self):
-        return self.readUntil(self.ard_ser, '\n')
-
-    def enterConfigMode(self):
-        if self.config_mode == False:
-            self.sendMsg("C 1 ;")
-            print self.recvMsg()
-                # print "NO_RESP_ERR"
-                # time.sleep(1)
-            self.config_mode = True;
-            print "Now in config mode"
-        else:
-            print "Already in config mode"
-
-    def exitConfigMode(self):
-        if self.config_mode == True:
-            self.sendMsg("C 0 ;")
-            print self.recvMsg()
-            self.config_mode = False
-            print "Exited config mode"
-        else:
-            print "Not in config mode"
-
-    def analogWrite(self, pin_num, value):
-        msg = "a " + str(pin_num) + " " + str(value) + " ;"
-        self.sendMsg(msg)
-        self.recvMsg()
-
-    def analogRead(self, pin_num):
-        msg = "A " + str(pin_num) + " ;"
-        self.sendMsg(msg)
-        front = self.readUntil(self.ard_ser, ' ')
-        middle = self.readUntil(self.ard_ser, ' ')
-        rest = self.recvMsg()
-        print front + " " + middle + " " + rest
-        return int(middle)
-
-    def digitalWrite(self, pin_num, value):
-        msg = "d " + str(pin_num) + " " + str(value) + " ;"
-        self.ard_ser.write(msg)
-        self.recvMsg()
-
-    def digitalRead(self, pin_num):
-        msg = "D " + str(pin_num) + " ;"
-        self.sendMsg(msg)
-        front = self.readUntil(self.ard_ser, ' ')
-        middle = self.readUntil(self.ard_ser, ' ')
-        rest = self.recvMsg()
-        print front + " " + middle + " " + rest
-        return int(middle)
-
-    def pinMode(self, pin_num, value):
-        msg = "P " + str(pin_num) + " " + str(value) + " ;"
-        self.sendMsg(msg)
-        self.recvMsg()
-
-    def delay(self, seconds):
-        time.sleep(seconds)
-
-    def tone(self, pin_num, value, duration):
-        msg = "t " + str(pin_num) + " " + str(value) + " " + str(duration) + " ;"
-        self.ard_ser.write(msg)
-        self.recvMsg()
-    
-    def attachServo(self, pin_num):
-        if self.ext_pins.count(pin_num) == 0 and pin_num < 16 and pin_num > -1:
-            self.ext_pins.append(pin_num)
-            self.ext_servo[pin_num] = 90
-        elif self.ext_pins.count(pin_num) > 0 and pin_num < 16 and pin_num > -1:
-            print "ERR: This pin already attached!"
-        else:
-            print "ERR: Invalid pin number!"
-
-    def moveServo(self, pin_num, value):
-        if pin_num in self.ext_servo and value <= 180 and value >= 0:
-            msg = "S " + str(pin_num) + " " + str(value) + " ;"
-            self.ard_ser.write(msg)
-            self.recvMsg()
-            self.ext_servo[pin_num] = value
-        else:
-            print "ERR: Invalid pin number or servo value"
-
-    def attachExtPWM(self, pin_num):
-        if self.ext_pins.count(pin_num) == 0 and pin_num < 16 and pin_num > -1:
-            self.ext_pins.append(pin_num)
-            self.ext_pwm[pin_num] = 50
-        elif self.ext_pins.count(pin_num) > 0 and pin_num < 16 and pin_num > -1:
-            print "ERR: This pin already attached!"
-        else:
-            print "ERR: Invalid pin number!"
-
-    def setPWM(self, pin_num, value):
-        if pin_num in self.ext_pwm and value <= 100 and value >= 0:
-            msg = "P " + str(pin_num) + " " + str(value) + " ;"
-            self.ard_ser.write(msg)
-            self.recvMsg()
-            self.ext_pwm[pin_num] = value
-        else:
-            print "ERR: Invalid pin number or PWM value"
-
-    def attachMotor(self, pin_num):
-        if self.ext_pins.count(pin_num) == 0 and pin_num < 16 and pin_num > -1:
-            self.ext_pins.append(pin_num)
-            self.ext_motor[pin_num]=0
-        elif self.ext_pins.count(pin_num) > 0 and pin_num < 16 and pin_num > -1:
-            print "ERR: This pin already attached!"
-        else:
-            print "ERR: Invalid pin number!"
-
-    def setMotor(self, pin_num, value):
-        value += 500
-        if pin_num in self.ext_motor and value <= 1000 and value >= 0:
-            msg = "M " + str(pin_num) + " " + str(value) + " ;"
-            self.ard_ser.write(msg)
-            self.recvMsg()
-            self.ext_motor[pin_num] = value
-        else:
-            print "ERR: Invalid pin number or PWM value"
-
-    def getMotorVal(self, pin_num):
-        if pin_num in self.ext_motor:
-            return self.ext_motor[pin_num]-500
-        else:
-            print "ERR: Invalid pin"
-
-    def getPWMVal(self, pin_num):
-        if pin_num in self.ext_pwm:
-            return self.ext_pwm[pin_num]
-        else:
-            print "ERR: Invalid pin"
-
-    def getServoVal(self, pin_num):
-        if pin_num in self.ext_servo:
-            return self.ext_servo[pin_num]
-        else:
-            print "ERR: Invalid pin"
-
-    def getGyro(self, axis):
-        msg = "y ;"
-        self.ard_ser.write(msg)
-        prefix = self.readUntil(self.ard_ser, ' ')
-        x_val = self.readUntil(self.ard_ser, ' ')
-        y_val = self.readUntil(self.ard_ser, ' ')
-        z_val = self.readUntil(self.ard_ser, ' ')
-        suffix = self.recvMsg()
-        print prefix + " " + x_val + " " + y_val + " " + z_val + " " + suffix
-        if axis == 0:
-            return x_val
-        elif axis == 1:
-            return y_val
-        elif axis == 2:
-            return z_val
-        else:
-            print "ERR: Invalid axis number"
-
-    def getAccel(self, axis):
-        msg = "g ;"
-        self.ard_ser.write(msg)
-        prefix = self.readUntil(self.ard_ser, ' ')
-        x_val = self.readUntil(self.ard_ser, ' ')
-        y_val = self.readUntil(self.ard_ser, ' ')
-        z_val = self.readUntil(self.ard_ser, ' ')
-        suffix = self.recvMsg()
-        print prefix + " " + x_val + " " + y_val + " " + z_val + " " + suffix
-        if axis == 0:
-            return x_val
-        elif axis == 1:
-            return y_val
-        elif axis == 2:
-            return z_val
-        else:
-            print "ERR: Invalid axis number"
-
-    def setupIMU(self):
-        msg = "I ;"
-        self.sendMsg(msg)
-        self.recvMsg()
-
+import sys, serial, time, math #, pygame
+#from pygame.locals import *
 
 class PyUtil(object):
-
-
 
     def __init__(self):
 		pass
@@ -354,8 +143,297 @@ class PyUtil(object):
         pygame.quit()
         sys.exit()
 
+
+class Arduino(object):
+    config_mode = False
+    LF_pins = [-1]
+
+    # These are the lists for 60 HZ boards
+    amt_LF_boards = 0
+    LF_pins = [-1]
+    ext_servo = {-1:0}
+
+    # These are the lists for 333 HZ boards
+    amt_HF_boards = 0
+    HF_pins = [-1]
+    ext_pwm = {-1:0}
+    ext_motor = {-1:0}
+
+    ard_ser = serial.Serial(None, 115200)
+    util = PyUtil()
+
+    def __init__(self, port_name):
+        self.ard_ser.port = port_name
+        self.ard_ser.timeout = None
+        self.ard_ser.open()
+        time.sleep(3)
+
+    def readUntil(self, file_obj, delim_char):
+        string_read = ""
+        while file_obj.inWaiting() == 0:
+            pass
+        while True:
+            curr_char = file_obj.read()
+            if curr_char == delim_char:
+                break
+            else:
+                string_read += curr_char
+                pass
+        return string_read
+
+    def readUntil_file(self, file_obj, delim_char):
+        string_read = ""
+        while True:
+            curr_char = file_obj.read()
+            print curr_char
+            if curr_char == delim_char:
+                print "hello"
+                break
+            else:
+                string_read += curr_char
+                pass
+        return string_read
+
+    def sendMsg(self, msg):
+        self.ard_ser.write(msg)
+
+    def recvMsg(self):
+        return self.readUntil(self.ard_ser, '\n')
+
+    def enterConfigMode(self):
+        if self.config_mode == False:
+            self.sendMsg("C 1 ;")
+            print self.recvMsg()
+                # print "NO_RESP_ERR"
+                # time.sleep(1)
+            self.config_mode = True;
+            print "Now in config mode"
+        else:
+            print "Already in config mode"
+
+    def exitConfigMode(self):
+        if self.config_mode == True:
+            self.sendMsg("C 0 ;")
+            print self.recvMsg()
+            self.config_mode = False
+            print "Exited config mode"
+        else:
+            print "Not in config mode"
+
+    def analogWrite(self, pin_num, value):
+        msg = "a " + str(pin_num) + " " + str(value) + " ;"
+        self.sendMsg(msg)
+        self.recvMsg()
+
+    def analogRead(self, pin_num):
+        msg = "A " + str(pin_num) + " ;"
+        self.sendMsg(msg)
+        front = self.readUntil(self.ard_ser, ' ')
+        middle = self.readUntil(self.ard_ser, ' ')
+        rest = self.recvMsg()
+        print front + " " + middle + " " + rest
+        return int(middle)
+
+    def digitalWrite(self, pin_num, value):
+        msg = "d " + str(pin_num) + " " + str(value) + " ;"
+        self.ard_ser.write(msg)
+        self.recvMsg()
+
+    def digitalRead(self, pin_num):
+        msg = "D " + str(pin_num) + " ;"
+        self.sendMsg(msg)
+        front = self.readUntil(self.ard_ser, ' ')
+        middle = self.readUntil(self.ard_ser, ' ')
+        rest = self.recvMsg()
+        print front + " " + middle + " " + rest
+        return int(middle)
+
+    def pinMode(self, pin_num, value):
+        msg = "P " + str(pin_num) + " " + str(value) + " ;"
+        self.sendMsg(msg)
+        print self.recvMsg()
+
+    def delay(self, seconds):
+        time.sleep(seconds)
+
+    def tone(self, pin_num, value, duration):
+        msg = "t " + str(pin_num) + " " + str(value) + " " + str(duration) + " ;"
+        self.ard_ser.write(msg)
+        self.recvMsg()
+
+    def servoWrite(self, pin_num, value):
+        if value <= 180 and value >= 0:
+            value = self.util.map(value, 0, 180, 200, 425)
+            msg = "S " + str(pin_num) + " " + str(value) + " ;"
+            self.sendMsg(msg)
+            print self.recvMsg()
+        else:
+            print "ERR: Invalid pin number or servo value"
+
+    def servoWriteMicroseconds(self, pin_num, value):
+        if value <= 3000 and value >= 200:
+            value = self.util.map(value, 200, 3000, 50, 625)
+            msg = "S " + str(pin_num) + " " + str(value) + " ;"
+            self.ard_ser.write(msg)
+            print msg
+            self.recvMsg()
+            self.ext_servo[pin_num] = value
+        else:
+            print "ERR: Invalid pin number or servo value"
+
+    def setPWM(self, pin_num, value):
+        if value <= 2000 and value >= 0:
+            msg = "M " + str(pin_num) + " " + str(value) + " ;"
+            self.ard_ser.write(msg)
+            self.recvMsg()
+            self.ext_pwm[pin_num] = value
+        else:
+            print "ERR: Invalid pin number or PWM value"
+
+    def setMotor(self, pin_num, value):
+        value += 1500
+        if pin_num in self.ext_motor and value <= 2000 and value >= 0:
+            msg = "M " + str(pin_num) + " " + str(value) + " ;"
+            self.ard_ser.write(msg)
+            self.recvMsg()
+            self.ext_motor[pin_num] = value
+        else:
+            print "ERR: Invalid pin number or PWM value"
+
+    def getGyro(self, axis):
+        msg = "y ;"
+        self.ard_ser.write(msg)
+        prefix = self.readUntil(self.ard_ser, ' ')
+        x_val = self.readUntil(self.ard_ser, ' ')
+        y_val = self.readUntil(self.ard_ser, ' ')
+        z_val = self.readUntil(self.ard_ser, ' ')
+        suffix = self.recvMsg()
+        print prefix + " " + x_val + " " + y_val + " " + z_val + " " + suffix
+        if axis == 0:
+            return x_val
+        elif axis == 1:
+            return y_val
+        elif axis == 2:
+            return z_val
+        else:
+            print "ERR: Invalid axis number"
+
+    def getAccel(self, axis):
+        msg = "g ;"
+        self.ard_ser.write(msg)
+        prefix = self.readUntil(self.ard_ser, ' ')
+        x_val = self.readUntil(self.ard_ser, ' ')
+        y_val = self.readUntil(self.ard_ser, ' ')
+        z_val = self.readUntil(self.ard_ser, ' ')
+        suffix = self.recvMsg()
+        print prefix + " " + x_val + " " + y_val + " " + z_val + " " + suffix
+        if axis == 0:
+            return x_val
+        elif axis == 1:
+            return y_val
+        elif axis == 2:
+            return z_val
+        else:
+            print "ERR: Invalid axis number"
+
+    def setupIMU(self):
+        msg = "I ;"
+        self.sendMsg(msg)
+        self.recvMsg()
+
+    def configurePWMBoards(self, mode):
+        #text-based setup system
+        if mode == 0:
+
+            #Gather data on input amounts
+            file = open('boardSetup.dat', 'w')
+            print "Welcome to the PWM board configuration menu."
+            amt_LF_outs = raw_input("How many low frequency devices (servos, VEX 29 controllers) are you using?")
+            amt_HF_outs = raw_input("How many high frequency devices (Talon motor controllers) are you using?")
+            self.amt_LF_boards = math.ceil(float(amt_LF_outs)/16.0);
+            print str(self.amt_LF_boards) + " low frequency boards necessary."
+            file.write(str(int(self.amt_LF_boards)) + '\n')
+            self.amt_HF_boards = math.ceil(float(amt_HF_outs)/16.0);
+            print str(self.amt_HF_boards) + " high frequency boards necessary."
+            file.write(str(int(self.amt_HF_boards)) + '\n')
+
+            if int(self.amt_HF_boards) > 1 or int(self.amt_LF_boards) > 1:
+                print "ERR: This amount of boards not supported at this time (max 1 each type). Config not saved."
+                os.remove('boardSetup.dat')
+                return
+
+            #Get addresses for those boards
+            for i in range(0,int(self.amt_LF_boards)):
+                address = raw_input("What is the I2C address of low freq board #" + str(i+1) + "? ")
+                file.write(str(address) + '\n')
+
+            #Get addresses for those boards
+            for i in range(0,int(self.amt_HF_boards)):
+                address = raw_input("What is the I2C address of high freq board #" + str(i+1) + "? ")
+                file.write(str(address) + '\n')
+
+            file.close()
+
+        #Use configuration data to set up and attach boards
+        print "Warning: Running without config menu. Make sure config is up to date"
+        time.sleep(1)
+
+        self.enterConfigMode()
+
+        infile = open('boardSetup.dat', 'r')
+
+        self.amt_LF_boards = int(infile.readline())
+        print str(self.amt_LF_boards) + " lf boards read"
+        self.amt_HF_boards = int(infile.readline())
+        print str(self.amt_HF_boards) + " hf boards read"
+
+        for i in range(0, self.amt_LF_boards):
+            address = int(infile.readline())
+            msg = "S " + str(address) + " ;"
+            self.sendMsg(msg)
+            print self.recvMsg()
+
+        for i in range(0, self.amt_HF_boards):
+            address = int(infile.readline())
+            msg = "M " + str(address) + " 2 ;"
+            self.sendMsg(msg)
+            print msg
+
+        self.exitConfigMode()
+
+        ##DEPRECATED##
+
+        def attachServo(self, pin_num):
+            if self.amt_LF_boards == 0:
+                print "ERR: No boards of this type exist"
+            if self.ext_pins.count(pin_num) == 0 and pin_num < 16 and pin_num > -1:
+                self.ext_pins.append(pin_num)
+                self.ext_servo[pin_num] = 90
+            elif self.ext_pins.count(pin_num) > 0 and pin_num < 16 and pin_num > -1:
+                print "ERR: This pin already attached!"
+            else:
+                print "ERR: Invalid pin number!"
+
+        def attachMotor(self, pin_num):
+            if self.ext_pins.count(pin_num) == 0 and pin_num < 16 and pin_num > -1:
+                self.ext_pins.append(pin_num)
+                self.ext_motor[pin_num]=0
+            elif self.ext_pins.count(pin_num) > 0 and pin_num < 16 and pin_num > -1:
+                print "ERR: This pin already attached!"
+            else:
+                print "ERR: Invalid pin number!"
+
+        def attachExtPWM(self, pin_num):
+            if self.ext_pins.count(pin_num) == 0 and pin_num < 16 and pin_num > -1:
+                self.ext_pins.append(pin_num)
+                self.ext_pwm[pin_num] = 50
+            elif self.ext_pins.count(pin_num) > 0 and pin_num < 16 and pin_num > -1:
+                print "ERR: This pin already attached!"
+            else:
+                print "ERR: Invalid pin number!"
+
 # global constants
-   
+
 OUTPUT = 0
 INPUT = 1
 INPUT_PULLDOWN = 2
@@ -364,9 +442,9 @@ LOW = 0
 HIGH = 1
 
 OFF = 0
-ON = 1      
-        
-        
+ON = 1
+
+
 NOTE_B0  = 31
 NOTE_C1  = 33
 NOTE_CS1 = 35
