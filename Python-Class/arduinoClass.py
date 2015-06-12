@@ -275,9 +275,7 @@ class Arduino(object):
             value = self.util.map(value, 200, 3000, 50, 625)
             msg = "S " + str(pin_num) + " " + str(value) + " ;"
             self.ard_ser.write(msg)
-            print msg
-            self.recvMsg()
-            self.ext_servo[pin_num] = value
+            print self.recvMsg()
         else:
             print "ERR: Invalid pin number or servo value"
 
@@ -286,17 +284,26 @@ class Arduino(object):
             msg = "M " + str(pin_num) + " " + str(value) + " ;"
             self.ard_ser.write(msg)
             self.recvMsg()
-            self.ext_pwm[pin_num] = value
         else:
             print "ERR: Invalid pin number or PWM value"
 
-    def setMotor(self, pin_num, value):
-        value += 1500
-        if pin_num in self.ext_motor and value <= 2000 and value >= 0:
+    def setVEX(self, pin_num, value):
+        value += 500
+        if value <= 1000 and value >= 0:
+            value = self.util.map(value, 0, 1000, 200, 425)
+            msg = "S " + str(pin_num) + " " + str(value) + " ;"
+            self.ard_ser.write(msg)
+            self.recvMsg()
+        else:
+            print "ERR: Invalid pin number or PWM value"
+
+    def setTalon(self, pin_num, value):
+        value += 500
+        if value <= 1000 and value >= 0:
+            value = self.util.map(value, 0, 1000, 200, 425)
             msg = "M " + str(pin_num) + " " + str(value) + " ;"
             self.ard_ser.write(msg)
             self.recvMsg()
-            self.ext_motor[pin_num] = value
         else:
             print "ERR: Invalid pin number or PWM value"
 
