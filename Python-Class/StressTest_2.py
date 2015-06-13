@@ -28,7 +28,6 @@ my_arduino.exitConfigMode()
 
 while True:
 
-	# BROKE!
 	val = my_arduino.analogRead(potentiometerPin)
 
 	my_arduino.analogWrite( redPin, val/4 )
@@ -46,7 +45,7 @@ Testing Results!
 		analog read
 		analog write
 		digital write
-		
+
 
 
 	Does Not Work
