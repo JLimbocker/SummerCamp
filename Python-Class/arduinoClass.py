@@ -54,22 +54,6 @@ class PyUtil(object):
         return self.joystick.get_button(button)
 
 
-    def constrain(self, value, low_bound, high_bound):
-        # make sure bounds are in the correct order
-        if low_bound > high_bound:
-            temp = low_bound
-            low_bound = high_bound
-            high_bound = temp
-
-        if value < low_bound:
-            return low_bound
-        elif value > high_bound:
-            return high_bound
-        else:
-            return value
-
-    def map(self, value, from_low, from_high, to_low, to_high):
-        return (value - from_low) * (to_high - to_low) / (from_high - from_low) + to_low
 
     def testPS(self):
         screen = pygame.display.set_mode((400,300))
@@ -438,6 +422,26 @@ class Arduino(object):
                 print "ERR: This pin already attached!"
             else:
                 print "ERR: Invalid pin number!"
+
+
+# global functions
+def constrain(value, low_bound, high_bound):
+    # make sure bounds are in the correct order
+    if low_bound > high_bound:
+        temp = low_bound
+        low_bound = high_bound
+        high_bound = temp
+
+    if value < low_bound:
+        return low_bound
+    elif value > high_bound:
+        return high_bound
+    else:
+        return value
+
+def map(value, from_low, from_high, to_low, to_high):
+    return (value - from_low) * (to_high - to_low) / (from_high - from_low) + to_low
+
 
 # global constants
 
