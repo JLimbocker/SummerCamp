@@ -59,6 +59,9 @@ void loop()
       case 't':
         generateTone();
         break;
+      case 'T':
+        getPing();
+        break;
       case 'g':
         readAccel();
         break;
@@ -135,6 +138,32 @@ void configure()
       response = "";
     }
   }
+}
+
+void getPing(){
+  response = "T ";
+  while(command.length() > 1)
+  {
+    index = command.indexOf(' ');
+    command = command.substring(index+1);
+    command.trim();
+    index = command.indexOf(' ');
+    pin = command.substring(0, index).toInt();
+
+    pinMode(pin, OUTPUT);
+    digitalWrite(pin, LOW);
+    delayMicroseconds(2);
+    digitalWrite(pin, HIGH);
+    delayMicroseconds(5);
+    digitalWrite(pin, LOW);
+    pinMode(pin, INPUT);
+    long duration = pulseIn(pin, HIGH);
+
+    duration = duration / 74 / 2;
+    response += String(duration) + " ";
+
+  }
+  response += ";";
 }
 
 void readAnalogPin()
@@ -315,7 +344,7 @@ void attachServo()
   command = command.substring(index+1);
   index = command.indexOf(' ');
   address = strtoul(command.substring(0, index).c_str(), endptr, 16);
-  
+
   command = command.substring(index+1);
   servo = Adafruit_PWMServoDriver(address);
   servo.begin();
@@ -369,13 +398,13 @@ void setPinMode()
 void generateTone()
 {
   response = "t ";
-  
+
   index = command.indexOf(' ');
   command = command.substring(index+1);
-  
+
   while(command.length() > 1)
   {
-    
+
     //command.trim();
     index = command.indexOf(' ');
     pin = command.substring(0, index).toInt();
@@ -388,16 +417,16 @@ void generateTone()
     index = command.indexOf(' ');
     int duration = command.substring(0, index).toInt();
     command = command.substring(index+1);
-    
+
     tone(pin, value, duration);
-    
+
     delay(duration*1.3);
     noTone(pin);
-    
+
     response += String(pin) + String(" ") + String(value) + String(" ") + String(duration) + String(" ");
   }
   response += ";";
-  
+
 }
 
 void setupIMU()

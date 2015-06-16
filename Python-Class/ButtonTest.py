@@ -24,12 +24,11 @@ my_arduino.exitConfigMode()
 
 while True:
 	btnVal = my_arduino.digitalRead(btnPin)
-	
-	
+
+
 	if int(btnVal) == 1:
 		my_arduino.digitalWrite(redPin, 0)
 	else:
 		my_arduino.digitalWrite(redPin, 1)
-	
+
 	my_arduino.delay(0.01)
-	
