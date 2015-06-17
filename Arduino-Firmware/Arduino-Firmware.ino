@@ -10,6 +10,7 @@ fingerprint sensor
 #include <Adafruit_LSM303_U.h>
 #include <Adafruit_L3GD20_U.h>
 #include <Adafruit_PWMServoDriver.h>
+#include <LiquidCrystal.h>
 #include <stdlib.h>
 
 //IMU Declarations
@@ -24,6 +25,8 @@ Adafruit_PWMServoDriver servo;
 String command;
 String response;
 int index, pin, value;
+bool screenWritten = false;
+LiquidCrystal lcd(12,11,5,4,3,2);
 
 void setup()
 {
@@ -70,6 +73,9 @@ void loop()
         break;
       case 'c':
         readMag();
+        break;
+      case 'L':
+        writeToScreen();
         break;
       case 'C':
         configure();
@@ -180,6 +186,38 @@ void readAnalogPin()
 
   }
   response += ";";
+}
+
+void writeToScreen()
+{
+  if(!screenWritten){
+    lcd.begin(16, 2);
+  }
+  response = "L ";
+  index = command.indexOf(' ');
+  command = command.substring(index+1);
+  command.trim();
+  index = command.indexOf(' ');
+  int line = command.substring(0, index).toInt();
+
+  lcd.setCursor(0,line);
+
+  index = command.indexOf(' ');
+  command = command.substring(index+1, command.length());
+  command.trim();
+
+  lcd.print(command);
+
+  int stringLen = command.length();
+  if(stringLen > 16)
+    delay(1000);
+  while(stringLen > 16){
+    lcd.scrollDisplayLeft();
+    delay(200);
+    stringLen--;
+  }
+
+  response += command + " ;";
 }
 
 void readDigitalPin()

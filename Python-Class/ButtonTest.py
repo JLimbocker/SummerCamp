@@ -4,8 +4,8 @@ from arduinoClass import *
 
 
 
-my_arduino = Arduino("/dev/ttyUSB2")
-btnPin = 2
+my_arduino = Arduino("/dev/cu.usbserial-A5027JS4")
+btnPin = 9
 
 redPin = 11
 bluePin = 9
@@ -15,20 +15,24 @@ greenPin = 10
 
 my_arduino.enterConfigMode()
 
-my_arduino.pinMode(btnPin,1)
-my_arduino.pinMode(redPin,0)
+my_arduino.pinMode(btnPin,INPUT_PULLUP)
 
 my_arduino.exitConfigMode()
+
+prevBtn = False
+counter = 0;
 
 # loop
 
 while True:
 	btnVal = my_arduino.digitalRead(btnPin)
+	print btnVal
 
+	if btnVal != prevBtn and btnVal == 0:
+		counter = counter + 1
 
-	if int(btnVal) == 1:
-		my_arduino.digitalWrite(redPin, 0)
-	else:
-		my_arduino.digitalWrite(redPin, 1)
+	prevBtn = btnVal
+	my_arduino.writeToScreen(0, "Count is: ")
+	my_arduino.writeToScreen(1, str(counter))
 
 	my_arduino.delay(0.01)

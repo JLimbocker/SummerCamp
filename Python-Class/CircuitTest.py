@@ -6,7 +6,7 @@
 
 from arduinoClass import *
 
-my_arduino = Arduino("/dev/tty.usbserial-A5027J5I")
+my_arduino = Arduino("/dev/cu.usbserial-A5027IVX")
 
 potentiometerPin = 0
 buttonPin = 2
@@ -72,10 +72,6 @@ while True:
 			color = 0
 			value = 0
 
-	
+
 
 	my_arduino.delay(0.001)
-
-
-
-

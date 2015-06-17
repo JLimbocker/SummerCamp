@@ -165,20 +165,18 @@ class Arduino(object):
                 pass
         return string_read
 
-'''
     def readUntil_file(self, file_obj, delim_char):
         string_read = ""
         while True:
             curr_char = file_obj.read()
-            # print curr_char
+            print curr_char
             if curr_char == delim_char:
-                # print "hello"
+                print "hello"
                 break
             else:
                 string_read += curr_char
                 pass
         return string_read
-'''
 
     def sendMsg(self, msg):
         self.ard_ser.write(msg)
@@ -189,22 +187,22 @@ class Arduino(object):
     def enterConfigMode(self):
         if self.config_mode == False:
             self.sendMsg("C 1 ;")
-            # print self.recvMsg()
+            print self.recvMsg()
                 # print "NO_RESP_ERR"
                 # time.sleep(1)
             self.config_mode = True;
-            # print "Now in config mode"
+            print "Now in config mode"
         else:
-            # print "Already in config mode"
+            print "Already in config mode"
 
     def exitConfigMode(self):
         if self.config_mode == True:
             self.sendMsg("C 0 ;")
-            # print self.recvMsg()
+            print self.recvMsg()
             self.config_mode = False
-            # print "Exited config mode"
+            print "Exited config mode"
         else:
-            # print "Not in config mode"
+            print "Not in config mode"
 
     def analogWrite(self, pin_num, value):
         msg = "a " + str(pin_num) + " " + str(value) + " ;"
@@ -237,7 +235,7 @@ class Arduino(object):
     def pinMode(self, pin_num, value):
         msg = "P " + str(pin_num) + " " + str(value) + " ;"
         self.sendMsg(msg)
-        # print self.recvMsg()
+        print self.recvMsg()
 
     def delay(self, seconds):
         time.sleep(seconds)
@@ -245,14 +243,19 @@ class Arduino(object):
     def tone(self, pin_num, value, duration):
         msg = "t " + str(pin_num) + " " + str(value) + " " + str(duration) + " ;"
         self.ard_ser.write(msg)
-        # print self.recvMsg()
+        print self.recvMsg()
+
+    def writeToScreen(self, row_num, message):
+        msg = "L " + str(row_num) + " " + message + " ;"
+        self.ard_ser.write(msg)
+        print self.recvMsg()
 
     def servoWrite(self, pin_num, value):
         if value <= 180 and value >= 0:
             value = self.util.map(value, 0, 180, 200, 425)
             msg = "S " + str(pin_num) + " " + str(value) + " ;"
             self.sendMsg(msg)
-            # print self.recvMsg()
+            print self.recvMsg()
         else:
             print "ERR: Invalid pin number or servo value"
 
@@ -261,7 +264,7 @@ class Arduino(object):
             value = self.util.map(value, 200, 3000, 50, 625)
             msg = "S " + str(pin_num) + " " + str(value) + " ;"
             self.ard_ser.write(msg)
-            # print self.recvMsg()
+            print self.recvMsg()
         else:
             print "ERR: Invalid pin number or servo value"
 
@@ -301,7 +304,7 @@ class Arduino(object):
         y_val = self.readUntil(self.ard_ser, ' ')
         z_val = self.readUntil(self.ard_ser, ' ')
         suffix = self.recvMsg()
-        # print prefix + " " + x_val + " " + y_val + " " + z_val + " " + suffix
+        print prefix + " " + x_val + " " + y_val + " " + z_val + " " + suffix
         if axis == 0:
             return x_val
         elif axis == 1:
@@ -319,7 +322,7 @@ class Arduino(object):
         y_val = self.readUntil(self.ard_ser, ' ')
         z_val = self.readUntil(self.ard_ser, ' ')
         suffix = self.recvMsg()
-        # print prefix + " " + x_val + " " + y_val + " " + z_val + " " + suffix
+        print prefix + " " + x_val + " " + y_val + " " + z_val + " " + suffix
         if axis == 0:
             return x_val
         elif axis == 1:
@@ -384,15 +387,13 @@ class Arduino(object):
             address = int(infile.readline())
             msg = "S " + str(address) + " ;"
             self.sendMsg(msg)
-            # print self.recvMsg()
-            self.recvMsg()
+            print self.recvMsg()
 
         for i in range(0, self.amt_HF_boards):
             address = int(infile.readline())
             msg = "M " + str(address) + " 2 ;"
             self.sendMsg(msg)
-            # print msg
-            self.recvMsg()
+            print msg
 
         self.exitConfigMode()
 
@@ -433,7 +434,7 @@ class Arduino(object):
         prefix = self.readUntil(self.ard_ser, ' ')
         distance = self.readUntil(self.ard_ser, ' ')
         suffix = self.recvMsg()
-        #print prefix + " " + distance + " " + suffix
+        print prefix + " " + distance + " " + suffix
         return int(distance)
 
 
@@ -460,7 +461,7 @@ def map(value, from_low, from_high, to_low, to_high):
 
 OUTPUT = 0
 INPUT = 1
-INPUT_PULLDOWN = 2
+INPUT_PULLUP = 2
 
 LOW = 0
 HIGH = 1
