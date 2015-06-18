@@ -15,9 +15,12 @@ fingerprint sensor
 #include <SoftwareSerial.h>
 #include <stdlib.h>
 
+
+
 //Fingerprint Decs
-SoftwareSerial fingerprintSerial(2, 3);
+SoftwareSerial fingerprintSerial(10, 11);
 Adafruit_Fingerprint finger = Adafruit_Fingerprint(&fingerprintSerial);
+
 
 //IMU Declarations
 Adafruit_LSM303_Accel_Unified accel = Adafruit_LSM303_Accel_Unified(54321);
@@ -25,6 +28,7 @@ Adafruit_LSM303_Mag_Unified mag = Adafruit_LSM303_Mag_Unified(12345);
 Adafruit_L3GD20_Unified gyro = Adafruit_L3GD20_Unified(20);
 Adafruit_PWMServoDriver motor;
 Adafruit_PWMServoDriver servo;
+
 
 
 // Other Decs
@@ -38,10 +42,12 @@ bool screenWritten = false;
 void setup()
 {
   Serial.begin(115200);
+ 
 }
 
 void loop()
 {
+  
   if(Serial.available())
   {
     command = Serial.readStringUntil(';');
@@ -206,34 +212,34 @@ void readAnalogPin()
 
 void writeToScreen()
 {
- /* if(!screenWritten){
-    lcd.begin(16, 2);
-  }
-  response = "L ";
-  index = command.indexOf(' ');
-  command = command.substring(index+1);
-  command.trim();
-  index = command.indexOf(' ');
-  int line = command.substring(0, index).toInt();
-
-  lcd.setCursor(0,line);
-
-  index = command.indexOf(' ');
-  command = command.substring(index+1, command.length());
-  command.trim();
-
-  lcd.print(command);
-
-  int stringLen = command.length();
-  if(stringLen > 16)
-    delay(1000);
-  while(stringLen > 16){
-    lcd.scrollDisplayLeft();
-    delay(200);
-    stringLen--;
-  }
-
-  response += command + " ;";*/
+//  if(!screenWritten){
+//    lcd.begin(16, 2);
+//  }
+//  response = "L ";
+//  index = command.indexOf(' ');
+//  command = command.substring(index+1);
+//  command.trim();
+//  index = command.indexOf(' ');
+//  int line = command.substring(0, index).toInt();
+//
+//  lcd.setCursor(0,line);
+//
+//  index = command.indexOf(' ');
+//  command = command.substring(index+1, command.length());
+//  command.trim();
+//
+//  lcd.print(command);
+//
+//  int stringLen = command.length();
+//  if(stringLen > 16)
+//    delay(1000);
+//  while(stringLen > 16){
+//    lcd.scrollDisplayLeft();
+//    delay(200);
+//    stringLen--;
+//  }
+//
+//  response += command + " ;";
 }
 
 void readDigitalPin()
@@ -517,7 +523,7 @@ int addFingerprint()
   }   
   
   Serial.print("ID "); Serial.println(id);
-  p = finger.storeModel(id);
+  //p = finger.storeModel(id);
   if (p == FINGERPRINT_OK) {
     Serial.println("Stored!");
   } else if (p == FINGERPRINT_PACKETRECIEVEERR) {
@@ -533,6 +539,7 @@ int addFingerprint()
     Serial.println("Unknown error");
     return p;
   } 
+  //response = "F " + String(id) + " ;";
   /*Serial.flush();
   index = command.indexOf(' ');
   command = command.substring(index+1);
@@ -641,9 +648,9 @@ int addFingerprint()
     Serial.println("Problem");
     response = "F -1 ;";
     return;
-  }
-  Serial.println(response);
-  Serial.println("Done");*/
+  }*/
+  //Serial.println(response);
+  Serial.println("Done");
 }
 
 
