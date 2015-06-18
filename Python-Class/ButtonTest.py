@@ -4,7 +4,7 @@ from arduinoClass import *
 
 
 
-my_arduino = Arduino("/dev/cu.usbserial-A5027JS4")
+my_arduino = Arduino("/dev/cu.usbserial-A5027IVX")
 btnPin = 9
 
 redPin = 11
@@ -26,13 +26,10 @@ counter = 0;
 
 while True:
 	btnVal = my_arduino.digitalRead(btnPin)
-	print btnVal
 
 	if btnVal != prevBtn and btnVal == 0:
 		counter = counter + 1
+		
 
-	prevBtn = btnVal
-	my_arduino.writeToScreen(0, "Count is: ")
-	my_arduino.writeToScreen(1, str(counter))
 
 	my_arduino.delay(0.01)

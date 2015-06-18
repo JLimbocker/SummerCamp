@@ -371,7 +371,9 @@ class Arduino(object):
             file.close()
 
         #Use configuration data to set up and attach boards
-        print "Warning: Running without config menu. Make sure config is up to date"
+        if mode == 0:
+            print "Warning: Running without config menu. Make sure config is up to date"
+
         time.sleep(1)
 
         self.enterConfigMode()
@@ -393,7 +395,7 @@ class Arduino(object):
             address = int(infile.readline())
             msg = "M " + str(address) + " 2 ;"
             self.sendMsg(msg)
-            print msg
+            print self.recvMsg()
 
         self.exitConfigMode()
 

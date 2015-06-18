@@ -6,7 +6,7 @@
 
 from arduinoClass import *
 
-my_arduino = Arduino("/dev/cu.usbserial-A5027IVX")
+my_arduino = Arduino("/dev/cu.usbserial-A5027J57")
 
 potentiometerPin = 0
 buttonPin = 2
