@@ -252,7 +252,7 @@ class Arduino(object):
 
     def servoWrite(self, pin_num, value):
         if value <= 180 and value >= 0:
-            value = self.util.map(value, 0, 180, 200, 425)
+            value = map(value, 0, 180, 200, 425)
             msg = "S " + str(pin_num) + " " + str(value) + " ;"
             self.sendMsg(msg)
             print self.recvMsg()
@@ -261,7 +261,7 @@ class Arduino(object):
 
     def servoWriteMicroseconds(self, pin_num, value):
         if value <= 3000 and value >= 200:
-            value = self.util.map(value, 200, 3000, 50, 625)
+            value = map(value, 200, 3000, 50, 625)
             msg = "S " + str(pin_num) + " " + str(value) + " ;"
             self.ard_ser.write(msg)
             print self.recvMsg()
@@ -279,7 +279,7 @@ class Arduino(object):
     def setVEX(self, pin_num, value):
         value += 500
         if value <= 1000 and value >= 0:
-            value = self.util.map(value, 0, 1000, 200, 425)
+            value = map(value, 0, 1000, 195, 425)
             msg = "S " + str(pin_num) + " " + str(value) + " ;"
             self.ard_ser.write(msg)
             self.recvMsg()
@@ -289,7 +289,7 @@ class Arduino(object):
     def setTalon(self, pin_num, value):
         value += 500
         if value <= 1000 and value >= 0:
-            value = self.util.map(value, 0, 1000, 200, 425)
+            value = map(value, 0, 1000, 600, 3500)
             msg = "M " + str(pin_num) + " " + str(value) + " ;"
             self.ard_ser.write(msg)
             self.recvMsg()
