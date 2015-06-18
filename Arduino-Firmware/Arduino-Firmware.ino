@@ -11,7 +11,13 @@ fingerprint sensor
 #include <Adafruit_L3GD20_U.h>
 #include <Adafruit_PWMServoDriver.h>
 #include <LiquidCrystal.h>
+#include <Adafruit_Fingerprint.h>
+#include <SoftwareSerial.h>
 #include <stdlib.h>
+
+//Fingerprint Decs
+SoftwareSerial fingerprintSerial(2, 3);
+Adafruit_Fingerprint finger = Adafruit_Fingerprint(&fingerprintSerial);
 
 //IMU Declarations
 Adafruit_LSM303_Accel_Unified accel = Adafruit_LSM303_Accel_Unified(54321);
@@ -24,8 +30,9 @@ Adafruit_PWMServoDriver servo;
 // Other Decs
 String command;
 String response;
-int index, pin, value;
+int index, pin, value, id;
 bool screenWritten = false;
+
 LiquidCrystal lcd(12,11,5,4,3,2);
 
 void setup()
@@ -77,6 +84,12 @@ void loop()
       case 'L':
         writeToScreen();
         break;
+      case 'f':
+        readFingerprint();
+        break;
+      case 'F':
+        addFingerprint();
+        break;
       case 'C':
         configure();
         break;
@@ -124,6 +137,9 @@ void configure()
           break;
         case 'I':
           setupIMU();
+          break;
+        case 'f':
+          setupFingerprint();
           break;
         case 'C':
           if(command[2] == '0')
@@ -349,6 +365,136 @@ void readMag()
   command = "";
 }
 
+void readFingerprint()
+{
+  uint8_t p = finger.getImage();
+  if (p != FINGERPRINT_OK)
+  {
+    response = "f -1 0 ;";
+    return;
+  }
+
+  p = finger.image2Tz();
+  if (p != FINGERPRINT_OK)
+  {
+    response = "f -1 0 ;";
+    return;
+  }
+
+  p = finger.fingerFastSearch();
+  if (p != FINGERPRINT_OK)
+  {
+    response = "f -1 0 ;";
+    return;
+  }
+
+  response = "f " + String(finger.fingerID) + " " + String(finger.confidence) + " ;";
+}
+
+void addFingerprint()
+{
+  index = command.indexOf(' ');
+  command = command.substring(index+1);
+
+  index = command.indexOf(' ');
+  id = command.substring(0, index).toInt();
+  command = command.substring(index+1);
+
+  int p = -1;
+  //Hold until finger detected
+  while (p != FINGERPRINT_OK) {
+    p = finger.getImage();
+  }
+
+  // OK success!
+
+  p = finger.image2Tz(1);
+  switch (p) {
+    case FINGERPRINT_OK:
+      break;
+    case FINGERPRINT_IMAGEMESS:
+      response = "F -1 ;";
+      return;
+    case FINGERPRINT_PACKETRECIEVEERR:
+      response = "F -1 ;";
+      return;
+    case FINGERPRINT_FEATUREFAIL:
+      response = "F -1 ;";
+      return;
+    case FINGERPRINT_INVALIDIMAGE:
+      response = "F -1 ;";
+      return;
+    default:
+      response = "F -1 ;";
+      return;
+  }
+
+
+  delay(1000);
+  p = 0;
+  //Sense finger
+  while (p != FINGERPRINT_NOFINGER) {
+    p = finger.getImage();
+  }
+  //Clear and rescan
+  p = -1;
+  //Repeat Scan
+  while (p != FINGERPRINT_OK) {
+    p = finger.getImage();
+  }
+
+  // OK success!
+
+  p = finger.image2Tz(2);
+  switch (p) {
+    case FINGERPRINT_OK:
+      break;
+    case FINGERPRINT_IMAGEMESS:
+      response = "F -1 ;";
+      return;
+    case FINGERPRINT_PACKETRECIEVEERR:
+      response = "F -1 ;";
+      return;
+    case FINGERPRINT_FEATUREFAIL:
+      response = "F -1 ;";
+      return;
+    case FINGERPRINT_INVALIDIMAGE:
+      response = "F -1 ;";
+      return;
+    default:
+      response = "F -1 ;";
+      return;
+  }
+
+
+  // OK converted!
+  p = finger.createModel();
+  if (p == FINGERPRINT_OK) {
+    //do nothing
+  } else {
+    response = "F -1 ;";
+    return;
+  }
+
+  p = finger.storeModel(id);
+  if (p == FINGERPRINT_OK) {
+    response = "F " + String(id) + " ;";
+  } else if (p == FINGERPRINT_PACKETRECIEVEERR) {
+    response = "F -1 ;";
+    return;
+  } else if (p == FINGERPRINT_BADLOCATION) {
+    response = "F -1 ;";
+    return;
+  } else if (p == FINGERPRINT_FLASHERR) {
+    response = "F -1 ;";
+    return;
+  } else {
+    response = "F -1 ;";
+    return;
+  }
+}
+
+
 
 void attachDCMotor()
 {
@@ -432,7 +578,14 @@ void setPinMode()
   response += ";";
 
 }
-
+void setupFingerprint()
+{
+  finger.begin(57600);
+  if(finger.verifyPassword())
+    response = "f 1 ;";
+  else
+    response = "f 0 ;";
+}
 void generateTone()
 {
   response = "t ";
