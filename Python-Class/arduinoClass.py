@@ -131,7 +131,8 @@ class PyUtil(object):
 class Arduino(object):
     config_mode = False
     LF_pins = [-1]
-
+    connected = False # bool to determine if arduino has been connected to
+	
     # These are the lists for 60 HZ boards
     amt_LF_boards = 0
     LF_pins = [-1]
@@ -154,6 +155,7 @@ class Arduino(object):
         self.ard_ser.port = None
         self.ard_ser.timeout = None
 
+
     # open(self, port_name)
     # Opens a serial connection on the given port
     #
@@ -161,16 +163,29 @@ class Arduino(object):
     # port_name - the port on which to open the serial port
     #
     # TODO: Add error handling for port not found errors
-    def open(self, port_name):
-        self.ard_ser.port = port_name;
-        self.ard_ser.open();
-        time.sleep(3);
+    def open(self, port_name, HANDSHAKE=True):
+        self.ard_ser.port = port_name
+        self.ard_ser.open()
+        #time.sleep(0.1);
+        print "Open port"
+        if HANDSHAKE :
+            print "Waiting for handshake"
+            self.ard_ser.setDTR(True)
+            time.sleep(0.5)
+            #self.ard_ser.setDTR(False)
+            msg = self.recvMsg()
+            print msg
+            
+        else:
+            time.sleep(3)
+        print "Connected!"
     # close(self)
     # Closes the serial port
     #
     # Parameters:
     # none
     def close(self):
+    	print "Close port"
         self.ard_ser.close()
 
     # readUntil(self, file_obj, delim_char)
@@ -303,7 +318,7 @@ class Arduino(object):
         front = self.readUntil(self.ard_ser, ' ')
         middle = self.readUntil(self.ard_ser, ' ')
         rest = self.recvMsg()
-        # print front + " " + middle + " " + rest
+        print front + " " + middle + " " + rest
         return int(middle)
 
     # pinMode(self, pin_num, value)
@@ -356,6 +371,17 @@ class Arduino(object):
             return fingerID
         return -1
 
+    # readFromKeypad(self)
+    # Reads a message from the keypad until the enter button is pressed
+    #
+    def readFromKeypad(self):
+        msg = "k ;"
+        self.sendMsg(msg)
+        front = self.readUntil(self.ard_ser, ' ')
+        keypadEntry = self.readUntil(self.ard_ser, ' ')
+        suffix = self.recvMsg()
+        return keypadEntry
+
     # writeToScreen(self, row_num, message)
     # Writes 'message' to the LCD screen
     #
@@ -363,6 +389,10 @@ class Arduino(object):
     # row_num - the row of the LCD to write to
     # message - the message to write
     def writeToScreen(self, row_num, message):
+        #msg = "L 2 test ;"
+        #self.ard_ser.write(msg)
+        #print self.recvMsg()
+
         msg = "L " + str(row_num) + " " + message + " ;"
         self.ard_ser.write(msg)
         print self.recvMsg()
@@ -390,7 +420,7 @@ class Arduino(object):
     # value - the pulse width
     def servoWriteMicroseconds(self, pin_num, value):
         if value <= 3000 and value >= 200:
-            value = map(value, 200, 3000, 50, 625)
+            value = map(value, 200, 3000, 42, 625)
             msg = "S " + str(pin_num) + " " + str(value) + " ;"
             self.ard_ser.write(msg)
             print self.recvMsg()
@@ -436,7 +466,7 @@ class Arduino(object):
     def setTalon(self, pin_num, value):
         value += 500
         if value <= 1000 and value >= 0:
-            value = map(value, 0, 1000, 600, 3500)
+            value = map(value, 0, 1000, 1200, 2900)
             msg = "M " + str(pin_num) + " " + str(value) + " ;"
             self.ard_ser.write(msg)
             self.recvMsg()
@@ -499,6 +529,30 @@ class Arduino(object):
         self.sendMsg(msg)
         self.recvMsg()
 
+    # attachStepper(self, pinStep, pinDir)
+    # REQUIRES CONFIG MODE
+    # Attaches a stepper motor driver on pinStep and pinDir
+    #
+    # Parameters:
+    # pinStep - the pin connected to the step pin of the driver
+    # pinDir - the pin connected to the direction pin of the driver
+    def attachStepper(self, pinStep, pinDir):
+        msg = "U " + pinStep + " " + pinDir + " ;"
+        self.sendMsg(msg)
+        self.recv.Msg()
+    # runStepper(self, steps)
+    # Runs the stepper motor a number of steps.
+    # This function call is blocking.
+    # Speed and Acceleration are set for NEMA17 2.3A Stepper Motor, 1/2 step
+    # 1 step (1/2 step) = 0.9 degrees
+    #
+    # Parameters:
+    # steps - the number of steps to move.
+    def runStepper(self, steps):
+        mgs = "U " + steps + " ;"
+        self.sendMsg(msg)
+        self.recvMsg()
+
     # configurePWMBoards(self, mode)
     # Sets up the Adafruit PWM boards for use with either of the motor controllers or servos.
     #
@@ -538,7 +592,7 @@ class Arduino(object):
             file.close()
 
         #Use configuration data to set up and attach boards
-        if mode == 0:
+        if mode == 1:
             print "Warning: Running without config menu. Make sure config is up to date"
 
         time.sleep(1)

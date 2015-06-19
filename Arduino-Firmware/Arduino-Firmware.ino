@@ -11,15 +11,11 @@ fingerprint sensor
 #include <Adafruit_L3GD20_U.h>
 #include <Adafruit_PWMServoDriver.h>
 #include <LiquidCrystal.h>
-#include <Adafruit_Fingerprint.h>
 #include <SoftwareSerial.h>
 #include <stdlib.h>
+#include <AccelStepper.h>
 
 
-
-//Fingerprint Decs
-SoftwareSerial fingerprintSerial(10, 11);
-Adafruit_Fingerprint finger = Adafruit_Fingerprint(&fingerprintSerial);
 
 
 //IMU Declarations
@@ -28,7 +24,7 @@ Adafruit_LSM303_Mag_Unified mag = Adafruit_LSM303_Mag_Unified(12345);
 Adafruit_L3GD20_Unified gyro = Adafruit_L3GD20_Unified(20);
 Adafruit_PWMServoDriver motor;
 Adafruit_PWMServoDriver servo;
-
+AccelStepper stepper;
 
 
 // Other Decs
@@ -36,12 +32,16 @@ String command;
 String response;
 int index, pin, value, id;
 bool screenWritten = false;
+int rows[] = {5,4,3,2};
+int columns[] = {9,8,7,6};
+char charData[4][4] = {{'1', '4', '7', 'r'}, {'2', '5', '8', '0'}, {'3', '6', '9', 'd'}, {'c', 'p', 'b', 'e'}};
 
-//LiquidCrystal lcd(12,11,5,4,3,2);
+LiquidCrystal lcd(12,11,5,4,3,2);
 
 void setup()
 {
   Serial.begin(115200);
+  Serial.println("*** ;");
 
 }
 
@@ -81,20 +81,20 @@ void loop()
       case 'g':
         readAccel();
         break;
+      case 'k':
+        keypad();
+        break;
       case 'y':
         readGyro();
         break;
       case 'c':
         readMag();
         break;
+      case 'U':
+        runStepper();
+        break;
       case 'L':
         writeToScreen();
-        break;
-      case 'f':
-        readFingerprint();
-        break;
-      case 'F':
-        addFingerprint();
         break;
       case 'C':
         configure();
@@ -141,11 +141,11 @@ void configure()
         case 'g':
 
           break;
+        case 'U':
+          attachStepper();
+          break;
         case 'I':
           setupIMU();
-          break;
-        case 'f':
-          setupFingerprint();
           break;
         case 'C':
           if(command[2] == '0')
@@ -166,6 +166,100 @@ void configure()
       response = "";
     }
   }
+}
+
+<<<<<<< Updated upstream
+String readKeypad(){
+  for(int i = 0; i <= 3; i++){
+    pinMode(columns[i], OUTPUT);
+  }
+  String message;
+  char pButtonVal = 0;
+  char lastCharWritten = 0;
+  char buttonVal = 0;
+  buttonVal = getCharacter();
+  while(true){
+    while(buttonVal == 0){
+      buttonVal = getCharacter();
+      pButtonVal = 0;
+    }
+    while(buttonVal == 'e'){
+      buttonVal = getCharacter();
+      if(buttonVal != 'e')
+        return message;
+    }
+    if(buttonVal != pButtonVal){
+      message += buttonVal;
+      //Serial.println(message);
+    }
+    buttonVal = getCharacter();
+    //Serial.println(buttonVal);
+    pButtonVal = buttonVal;
+  }
+}
+
+char getCharacter(){
+  int iVal = 0;
+  int jVal = 0;
+  int returnChar = 0;
+  for(int i = 0; i <= 3; i++){
+    digitalWrite(columns[i], HIGH);
+    //Serial.print("Column: ");
+    //Serial.print(i);
+    for(int j = 0; j <= 3; j++){
+      //Serial.print(" Row: ");
+      //Serial.print(j);
+      int pinValue = analogRead(rows[j]);
+      //Serial.print("  pinValue: ");
+      //Serial.println(pinValue);
+      if(pinValue >= 500){
+        iVal = i+1;
+        jVal = j+1;
+        break;
+      }
+      //delay(10);
+    }
+    digitalWrite(columns[i], LOW);
+  }
+  if(iVal == 0 && jVal == 0)
+    returnChar = 0;
+  else
+    returnChar = charData[iVal-1][jVal-1];
+  //Serial.println(returnChar);
+  return returnChar;
+}
+void attachStepper()
+{
+  index = command.indexOf(' ');
+  command = command.substring(index+1);
+  command.trim();
+  index = command.indexOf(' ');
+  int pinStep = command.substring(0, index).toInt();
+  command = command.substring(index+1);
+  command.trim();
+  index = command.indexOf(' ');
+  int pinDir = command.substring(0, index).toInt();
+
+  stepper = AccelStepper(1, pinStep, pinDir);
+
+  stepper.setMaxSpeed(2400);
+  stepper.setAcceleration(600);
+  response = "U " + String(pinStep) + " " + String(pinDir) + " ;";
+}
+
+void runStepper()
+{
+  index = command.indexOf(' ');
+  command = command.substring(index+1);
+  command.trim();
+  index = command.indexOf(' ');
+  int steps = command.substring(0, index).toInt();
+
+  stepper.move(steps);
+  while(stepper.distanceToGo())
+    stepper.run();
+  response = "U " + String(steps) + " ;";
+>>>>>>> Stashed changes
 }
 
 void getPing(){
@@ -210,10 +304,18 @@ void readAnalogPin()
   response += ";";
 }
 
+void keypad()
+{
+  response = "k ";
+  response += readKeypad();
+  response += " ;";
+}
+
 void writeToScreen()
 {
   if(!screenWritten){
     lcd.begin(16, 2);
+    screenWritten = true;
   }
   response = "L ";
   index = command.indexOf(' ');
@@ -224,7 +326,7 @@ void writeToScreen()
 
   if(line == 2)
   {
-    lcd.clear();
+    lcd.begin(16,2);
     response += "cleared ;";
     return;
   }
@@ -377,290 +479,6 @@ void readMag()
   command = "";
 }
 
-void readFingerprint()
-{
-  uint8_t p = finger.getImage();
-  if (p != FINGERPRINT_OK)
-  {
-    response = "f -1 0 ;";
-    return;
-  }
-
-  p = finger.image2Tz();
-  if (p != FINGERPRINT_OK)
-  {
-    response = "f -1 0 ;";
-    return;
-  }
-
-  p = finger.fingerFastSearch();
-  if (p != FINGERPRINT_OK)
-  {
-    response = "f -1 0 ;";
-    return;
-  }
-
-  response = "f " + String(finger.fingerID) + " " + String(finger.confidence) + " ;";
-}
-
-int addFingerprint()
-{
-  index = command.indexOf(' ');
-  command = command.substring(index+1);
-
-  index = command.indexOf(' ');
-  id = command.substring(0, index).toInt();
-  command = command.substring(index+1);
-  int p = -1;
-  Serial.println("Waiting for valid finger to enroll");
-  while (p != FINGERPRINT_OK) {
-    p = finger.getImage();
-    switch (p) {
-    case FINGERPRINT_OK:
-      Serial.println("Image taken");
-      break;
-    case FINGERPRINT_NOFINGER:
-      Serial.println(".");
-      break;
-    case FINGERPRINT_PACKETRECIEVEERR:
-      Serial.println("Communication error");
-      break;
-    case FINGERPRINT_IMAGEFAIL:
-      Serial.println("Imaging error");
-      break;
-    default:
-      Serial.println("Unknown error");
-      break;
-    }
-  }
-
-  // OK success!
-
-  p = finger.image2Tz(1);
-  switch (p) {
-    case FINGERPRINT_OK:
-      Serial.println("Image converted");
-      break;
-    case FINGERPRINT_IMAGEMESS:
-      Serial.println("Image too messy");
-      return p;
-    case FINGERPRINT_PACKETRECIEVEERR:
-      Serial.println("Communication error");
-      return p;
-    case FINGERPRINT_FEATUREFAIL:
-      Serial.println("Could not find fingerprint features");
-      return p;
-    case FINGERPRINT_INVALIDIMAGE:
-      Serial.println("Could not find fingerprint features");
-      return p;
-    default:
-      Serial.println("Unknown error");
-      return p;
-  }
-
-  Serial.println("Remove finger");
-  delay(2000);
-  p = 0;
-  while (p != FINGERPRINT_NOFINGER) {
-    p = finger.getImage();
-  }
-
-  p = -1;
-  Serial.println("Place same finger again");
-  while (p != FINGERPRINT_OK) {
-    p = finger.getImage();
-    switch (p) {
-    case FINGERPRINT_OK:
-      Serial.println("Image taken");
-      break;
-    case FINGERPRINT_NOFINGER:
-      Serial.print(".");
-      break;
-    case FINGERPRINT_PACKETRECIEVEERR:
-      Serial.println("Communication error");
-      break;
-    case FINGERPRINT_IMAGEFAIL:
-      Serial.println("Imaging error");
-      break;
-    default:
-      Serial.println("Unknown error");
-      break;
-    }
-  }
-
-  // OK success!
-
-  p = finger.image2Tz(2);
-  switch (p) {
-    case FINGERPRINT_OK:
-      Serial.println("Image converted");
-      break;
-    case FINGERPRINT_IMAGEMESS:
-      Serial.println("Image too messy");
-      return p;
-    case FINGERPRINT_PACKETRECIEVEERR:
-      Serial.println("Communication error");
-      return p;
-    case FINGERPRINT_FEATUREFAIL:
-      Serial.println("Could not find fingerprint features");
-      return p;
-    case FINGERPRINT_INVALIDIMAGE:
-      Serial.println("Could not find fingerprint features");
-      return p;
-    default:
-      Serial.println("Unknown error");
-      return p;
-  }
-
-
-  // OK converted!
-  p = finger.createModel();
-  if (p == FINGERPRINT_OK) {
-    Serial.println("Prints matched!");
-  } else if (p == FINGERPRINT_PACKETRECIEVEERR) {
-    Serial.println("Communication error");
-    return p;
-  } else if (p == FINGERPRINT_ENROLLMISMATCH) {
-    Serial.println("Fingerprints did not match");
-    return p;
-  } else {
-    Serial.println("Unknown error");
-    return p;
-  }
-
-  Serial.print("ID "); Serial.println(id);
-  //p = finger.storeModel(id);
-  if (p == FINGERPRINT_OK) {
-    Serial.println("Stored!");
-  } else if (p == FINGERPRINT_PACKETRECIEVEERR) {
-    Serial.println("Communication error");
-    return p;
-  } else if (p == FINGERPRINT_BADLOCATION) {
-    Serial.println("Could not store in that location");
-    return p;
-  } else if (p == FINGERPRINT_FLASHERR) {
-    Serial.println("Error writing to flash");
-    return p;
-  } else {
-    Serial.println("Unknown error");
-    return p;
-  }
-  //response = "F " + String(id) + " ;";
-  /*Serial.flush();
-  index = command.indexOf(' ');
-  command = command.substring(index+1);
-
-  index = command.indexOf(' ');
-  id = command.substring(0, index).toInt();
-  command = command.substring(index+1);
-
-  int p = -1;
-  //Hold until finger detected
-  while (p != FINGERPRINT_OK) {
-    p = finger.getImage();
-  }
-  Serial.println("Initial Read Success");
-  // OK success!
-
-  p = finger.image2Tz(1);
-  switch (p) {
-    case FINGERPRINT_OK:
-      break;
-    case FINGERPRINT_IMAGEMESS:
-      response = "F -1 ;";
-      return;
-    case FINGERPRINT_PACKETRECIEVEERR:
-      response = "F -1 ;";
-      return;
-    case FINGERPRINT_FEATUREFAIL:
-      response = "F -1 ;";
-      return;
-    case FINGERPRINT_INVALIDIMAGE:
-      response = "F -1 ;";
-      return;
-    default:
-      response = "F -1 ;";
-      return;
-  }
-  Serial.println("Initial Read Parsed");
-
-  delay(2000);
-  p = 0;
-  Serial.println("Re-scan...");
-  //Sense finger
-  while (p != FINGERPRINT_NOFINGER) {
-    p = finger.getImage();
-  }
-  //Clear and rescan
-  p = -1;
-  //Repeat Scan
-  while (p != FINGERPRINT_OK) {
-    p = finger.getImage();
-  }
-  Serial.println("Re-scan complete");
-  // OK success!
-
-  p = finger.image2Tz(2);
-  switch (p) {
-    case FINGERPRINT_OK:
-      break;
-    case FINGERPRINT_IMAGEMESS:
-      response = "F -1 ;";
-      return;
-    case FINGERPRINT_PACKETRECIEVEERR:
-      response = "F -1 ;";
-      return;
-    case FINGERPRINT_FEATUREFAIL:
-      response = "F -1 ;";
-      return;
-    case FINGERPRINT_INVALIDIMAGE:
-      response = "F -1 ;";
-      return;
-    default:
-      response = "F -1 ;";
-      return;
-  }
-
-  Serial.println("Re-scan converted");
-  // OK converted!
-  p = finger.createModel();
-  Serial.println("Model Created");
-  if (p == FINGERPRINT_OK) {
-    //do nothing
-  } else {
-    Serial.println("Problem");
-    response = "F -1 ;";
-    return;
-  }
-  delay(500);
-  Serial.println("Storing");
-  //p = finger.storeModel(id);
-  Serial.println("Stored");
-  if (p == FINGERPRINT_OK) {
-    response = String("F ") + String(id) + String(" ;");
-  } else if (p == FINGERPRINT_PACKETRECIEVEERR) {
-    Serial.println("Problem");
-    response = "F -1 ;";
-    return;
-  } else if (p == FINGERPRINT_BADLOCATION) {
-    Serial.println("Problem");
-    response = "F -1 ;";
-    return;
-  } else if (p == FINGERPRINT_FLASHERR) {
-    Serial.println("Problem");
-    response = "F -1 ;";
-    return;
-  } else {
-    Serial.println("Problem");
-    response = "F -1 ;";
-    return;
-  }*/
-  //Serial.println(response);
-  Serial.println("Done");
-}
-
-
-
 void attachDCMotor()
 {
   int address;
@@ -743,14 +561,7 @@ void setPinMode()
   response += ";";
 
 }
-void setupFingerprint()
-{
-  finger.begin(57600);
-  if(finger.verifyPassword())
-    response = "f 1 ;";
-  else
-    response = "f 0 ;";
-}
+
 void generateTone()
 {
   response = "t ";
