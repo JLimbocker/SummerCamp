@@ -22,13 +22,13 @@ uint8_t getFingerprintEnroll(int id);
 
 // pin #2 is IN from sensor (GREEN wire)
 // pin #3 is OUT from arduino  (WHITE wire)
-SoftwareSerial mySerial(2, 3);
+SoftwareSerial mySerial(10, 11);
 
 Adafruit_Fingerprint finger = Adafruit_Fingerprint(&mySerial);
 
 void setup()  
 {
-  Serial.begin(9600);
+  Serial.begin(115200);
   Serial.println("fingertest");
 
   // set the data rate for the sensor serial port

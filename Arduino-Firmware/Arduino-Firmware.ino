@@ -42,12 +42,12 @@ bool screenWritten = false;
 void setup()
 {
   Serial.begin(115200);
- 
+
 }
 
 void loop()
 {
-  
+
   if(Serial.available())
   {
     command = Serial.readStringUntil(';');
@@ -188,7 +188,7 @@ void getPing(){
     long duration = pulseIn(pin, HIGH);
 
     duration = duration / 74 / 2;
-    response += String(duration) + " ";
+  response += String(duration) + " ";
 
   }
   response += ";";
@@ -212,34 +212,40 @@ void readAnalogPin()
 
 void writeToScreen()
 {
-//  if(!screenWritten){
-//    lcd.begin(16, 2);
-//  }
-//  response = "L ";
-//  index = command.indexOf(' ');
-//  command = command.substring(index+1);
-//  command.trim();
-//  index = command.indexOf(' ');
-//  int line = command.substring(0, index).toInt();
-//
-//  lcd.setCursor(0,line);
-//
-//  index = command.indexOf(' ');
-//  command = command.substring(index+1, command.length());
-//  command.trim();
-//
-//  lcd.print(command);
-//
-//  int stringLen = command.length();
-//  if(stringLen > 16)
-//    delay(1000);
-//  while(stringLen > 16){
-//    lcd.scrollDisplayLeft();
-//    delay(200);
-//    stringLen--;
-//  }
-//
-//  response += command + " ;";
+  if(!screenWritten){
+    lcd.begin(16, 2);
+  }
+  response = "L ";
+  index = command.indexOf(' ');
+  command = command.substring(index+1);
+  command.trim();
+  index = command.indexOf(' ');
+  int line = command.substring(0, index).toInt();
+
+  if(line == 2)
+  {
+    lcd.clear();
+    response += "cleared ;";
+    return;
+  }
+  lcd.setCursor(0,line);
+
+  index = command.indexOf(' ');
+  command = command.substring(index+1, command.length());
+  command.trim();
+
+  lcd.print(command);
+
+  int stringLen = command.length();
+  if(stringLen > 16)
+    delay(1000);
+  while(stringLen > 16){
+    lcd.scrollDisplayLeft();
+    delay(200);
+    stringLen--;
+  }
+
+  response += command + " ;";
 }
 
 void readDigitalPin()
@@ -451,7 +457,7 @@ int addFingerprint()
       Serial.println("Unknown error");
       return p;
   }
-  
+
   Serial.println("Remove finger");
   delay(2000);
   p = 0;
@@ -505,8 +511,8 @@ int addFingerprint()
       Serial.println("Unknown error");
       return p;
   }
-  
-  
+
+
   // OK converted!
   p = finger.createModel();
   if (p == FINGERPRINT_OK) {
@@ -520,8 +526,8 @@ int addFingerprint()
   } else {
     Serial.println("Unknown error");
     return p;
-  }   
-  
+  }
+
   Serial.print("ID "); Serial.println(id);
   //p = finger.storeModel(id);
   if (p == FINGERPRINT_OK) {
@@ -538,7 +544,7 @@ int addFingerprint()
   } else {
     Serial.println("Unknown error");
     return p;
-  } 
+  }
   //response = "F " + String(id) + " ;";
   /*Serial.flush();
   index = command.indexOf(' ');
