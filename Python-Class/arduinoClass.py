@@ -335,6 +335,24 @@ class Arduino(object):
         self.ard_ser.write(msg)
         print self.recvMsg()
 
+    # readFingerprint(self)
+    # SPECIAL FIRMWARE REQUIRED
+    # This function requests a fingerprint scan from the Arduino
+    #
+    # Parameters:
+    # none
+    #
+    # Returns:
+    # fingerID - the id of the fingerprint, or -1 if bad read
+    def readFingerprint(self):
+        msg = "f ;"
+        self.sendMsg(msg)
+        front = self.readUntil(self.ard_ser, ' ')
+        fingerID = self.readUntil(self.ard_ser, ' ')
+        confidence = self.recvMsg()
+        if(confidence < 100):
+            return fingerID
+        return -1
 
     # writeToScreen(self, row_num, message)
     # Writes 'message' to the LCD screen
