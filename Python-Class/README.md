@@ -255,6 +255,7 @@ Summer 2015
   + ON
 + Musical Notes
   + Format: NOTE_{note name}{sharp}{octave}
+  + Example: NOTE_A4 (A4) NOTE_AS4 (A4 Sharp)
 
 ## Communication <a id="communication"></a>
 General form of communication is call and response.  Pi sends command, terminated by a semicolon. Arduino responds with the result of the command, terminated by a semicolon.
