@@ -1,6 +1,6 @@
 # Arduino-Python interface firmware
 ---
-This firmware serves as the interface between an Arduino microcontroller and a Raspberry Pi running python.  This firmware is designed to be run using its Python counterpart [link to Python counterpart].
+This firmware serves as the interface between an Arduino microcontroller and a Raspberry Pi running python.  This firmware is designed to be run using its [Python counterpart](https://github.com/JLimbocker/SummerCamp/tree/master/Python-Class).
 
 ## Compatible Commands
 General form of communication is call and response.  Pi sends command, terminated by a semicolon. Arduino responds with the result of the command, terminated by a semicolon.
