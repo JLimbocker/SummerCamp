@@ -159,6 +159,8 @@ class Arduino(object):
     #
     # Parameters:
     # port_name - the port on which to open the serial port
+    #
+    # TODO: Add error handling for port not found errors
     def open(self, port_name):
         self.ard_ser.port = port_name;
         self.ard_ser.open();
@@ -399,7 +401,7 @@ class Arduino(object):
     # Sets the PWM value for a channel on the PWM board
     #
     # Parameters:
-    # pin_num - the index of the motor on the PWM board
+    # pin_num - the index of the pin on the PWM board
     # value - the pwm value
     def setPWM(self, pin_num, value):
         if value <= 2000 and value >= 0:
@@ -594,7 +596,11 @@ class Arduino(object):
                 print "ERR: This pin already attached!"
             else:
                 print "ERR: Invalid pin number!"
-
+    # getPing(self, pin_num)
+    # This function reads a ping sensor on the specified pin
+    #
+    # Parameters:
+    # pin_num - the pin on which the sensor is located
     def getPing(self, pin_num):
         msg = "T " + str(pin_num) + " ;"
         self.sendMsg(msg)
