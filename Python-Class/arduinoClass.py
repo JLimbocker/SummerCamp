@@ -392,7 +392,7 @@ class Arduino(object):
     # value - the pulse width
     def servoWriteMicroseconds(self, pin_num, value):
         if value <= 3000 and value >= 200:
-            value = map(value, 200, 3000, 50, 625)
+            value = map(value, 200, 3000, 42, 625)
             msg = "S " + str(pin_num) + " " + str(value) + " ;"
             self.ard_ser.write(msg)
             print self.recvMsg()
