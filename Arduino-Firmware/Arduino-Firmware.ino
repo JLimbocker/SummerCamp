@@ -37,7 +37,7 @@ String response;
 int index, pin, value, id;
 bool screenWritten = false;
 
-//LiquidCrystal lcd(12,11,5,4,3,2);
+LiquidCrystal lcd(12,11,5,4,3,2);
 
 void setup()
 {
@@ -214,6 +214,7 @@ void writeToScreen()
 {
   if(!screenWritten){
     lcd.begin(16, 2);
+    screenWritten = true;
   }
   response = "L ";
   index = command.indexOf(' ');
@@ -224,7 +225,7 @@ void writeToScreen()
 
   if(line == 2)
   {
-    lcd.clear();
+    lcd.begin(16,2);
     response += "cleared ;";
     return;
   }
