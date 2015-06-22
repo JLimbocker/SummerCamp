@@ -164,7 +164,9 @@ class Arduino(object):
     def open(self, port_name):
         self.ard_ser.port = port_name;
         self.ard_ser.open();
-        time.sleep(3);
+        #time.sleep(0.1);
+        msg = self.recvMsg();
+        print "Connected!"
     # close(self)
     # Closes the serial port
     #
