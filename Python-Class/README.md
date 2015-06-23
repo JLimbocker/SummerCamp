@@ -33,6 +33,7 @@ Summer 2015
   + [setupIMU](#f_setupIMU)
   + [configurePWMBoards](#f_configurePWMBoards)
   + [getPing](#f_getPing)
+  + [attachStepper](#f_attachStepper)
 + [Constants](#constants)
 + [Communication](#communication)
 
@@ -243,6 +244,25 @@ Summer 2015
   + Returns:
     + distance - the output of the sensor
 
+### attachStepper(self, pinStep, pinDir) <a id="f_attachStepper"></a>
+  + Attaches a stepper motor driver on pinStep and pinDir
+  + REQUIRES CONFIG MODE
+  + Parameters:
+    + pinStep - the pin connected to the step pin of the driver
+    + pinDir - the pin connected to the direction pin of the driver
+  + Returns:
+    + nothing
+
+### runStepper(self, steps) <a id="f_runStepper"></a>
+  + Runs the stepper motor 'steps' steps.
+  + This function is blocking.
+  + Acceleration and Speed are set up for NEMA17 2.3A stepper motor, 1/2 stepping
+  + 1/2 step = 0.9 degrees
+  + Parameters:
+    + steps - the number of steps to run
+  + Returns:
+    + nothing
+    
 ## Constants <a id="constants"></a>
 + Pin Modes
   + OUTPUT
