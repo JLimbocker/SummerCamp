@@ -161,11 +161,14 @@ class Arduino(object):
     # port_name - the port on which to open the serial port
     #
     # TODO: Add error handling for port not found errors
-    def open(self, port_name):
+    def open(self, port_name, HANDSHAKE=True):
         self.ard_ser.port = port_name;
         self.ard_ser.open();
         #time.sleep(0.1);
-        msg = self.recvMsg();
+        if HANDSHAKE:
+            msg = self.recvMsg();
+        else:
+            time.sleep(1)
         print "Connected!"
     # close(self)
     # Closes the serial port
@@ -540,7 +543,7 @@ class Arduino(object):
             file.close()
 
         #Use configuration data to set up and attach boards
-        if mode == 0:
+        if mode == 1:
             print "Warning: Running without config menu. Make sure config is up to date"
 
         time.sleep(1)
