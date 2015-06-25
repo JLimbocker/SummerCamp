@@ -131,7 +131,8 @@ class PyUtil(object):
 class Arduino(object):
     config_mode = False
     LF_pins = [-1]
-
+    connected = False # bool to determine if arduino has been connected to
+	
     # These are the lists for 60 HZ boards
     amt_LF_boards = 0
     LF_pins = [-1]
@@ -154,6 +155,7 @@ class Arduino(object):
         self.ard_ser.port = None
         self.ard_ser.timeout = None
 
+
     # open(self, port_name)
     # Opens a serial connection on the given port
     #
@@ -162,13 +164,20 @@ class Arduino(object):
     #
     # TODO: Add error handling for port not found errors
     def open(self, port_name, HANDSHAKE=True):
-        self.ard_ser.port = port_name;
-        self.ard_ser.open();
+        self.ard_ser.port = port_name
+        self.ard_ser.open()
         #time.sleep(0.1);
-        if HANDSHAKE:
-            msg = self.recvMsg();
+        print "Open port"
+        if HANDSHAKE :
+            print "Waiting for handshake"
+            self.ard_ser.setDTR(True)
+            time.sleep(0.5)
+            #self.ard_ser.setDTR(False)
+            msg = self.recvMsg()
+            print msg
+            
         else:
-            time.sleep(1)
+            time.sleep(3)
         print "Connected!"
     # close(self)
     # Closes the serial port
@@ -176,6 +185,7 @@ class Arduino(object):
     # Parameters:
     # none
     def close(self):
+    	print "Close port"
         self.ard_ser.close()
 
     # readUntil(self, file_obj, delim_char)
@@ -308,7 +318,7 @@ class Arduino(object):
         front = self.readUntil(self.ard_ser, ' ')
         middle = self.readUntil(self.ard_ser, ' ')
         rest = self.recvMsg()
-        # print front + " " + middle + " " + rest
+        print front + " " + middle + " " + rest
         return int(middle)
 
     # pinMode(self, pin_num, value)
@@ -379,9 +389,9 @@ class Arduino(object):
     # row_num - the row of the LCD to write to
     # message - the message to write
     def writeToScreen(self, row_num, message):
-        msg = "L 2 test ;"
-        self.ard_ser.write(msg)
-        print self.recvMsg()
+        #msg = "L 2 test ;"
+        #self.ard_ser.write(msg)
+        #print self.recvMsg()
 
         msg = "L " + str(row_num) + " " + message + " ;"
         self.ard_ser.write(msg)
@@ -456,7 +466,7 @@ class Arduino(object):
     def setTalon(self, pin_num, value):
         value += 500
         if value <= 1000 and value >= 0:
-            value = map(value, 0, 1000, 600, 3500)
+            value = map(value, 0, 1000, 1200, 2900)
             msg = "M " + str(pin_num) + " " + str(value) + " ;"
             self.ard_ser.write(msg)
             self.recvMsg()
