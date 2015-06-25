@@ -358,6 +358,17 @@ class Arduino(object):
             return fingerID
         return -1
 
+    # readFromKeypad(self)
+    # Reads a message from the keypad until the enter button is pressed
+    #
+    def readFromKeypad(self):
+        msg = "k ;"
+        self.sendMsg(msg)
+        front = self.readUntil(self.ard_ser, ' ')
+        keypadEntry = self.readUntil(self.ard_ser, ' ')
+        suffix = self.recvMsg()
+        return keypadEntry
+
     # writeToScreen(self, row_num, message)
     # Writes 'message' to the LCD screen
     #
@@ -365,6 +376,10 @@ class Arduino(object):
     # row_num - the row of the LCD to write to
     # message - the message to write
     def writeToScreen(self, row_num, message):
+        msg = "L 2 test ;"
+        self.ard_ser.write(msg)
+        print self.recvMsg()
+
         msg = "L " + str(row_num) + " " + message + " ;"
         self.ard_ser.write(msg)
         print self.recvMsg()

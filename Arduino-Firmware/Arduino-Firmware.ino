@@ -31,6 +31,9 @@ String command;
 String response;
 int index, pin, value, id;
 bool screenWritten = false;
+int rows[] = {5,4,3,2};
+int columns[] = {9,8,7,6};
+char charData[4][4] = {{'1', '4', '7', 'r'}, {'2', '5', '8', '0'}, {'3', '6', '9', 'd'}, {'c', 'p', 'b', 'e'}};
 
 LiquidCrystal lcd(12,11,5,4,3,2);
 
@@ -76,6 +79,9 @@ void loop()
         break;
       case 'g':
         readAccel();
+        break;
+      case 'k':
+        keypad();
         break;
       case 'y':
         readGyro();
@@ -155,6 +161,66 @@ void configure()
   }
 }
 
+String readKeypad(){
+  for(int i = 0; i <= 3; i++){
+    pinMode(columns[i], OUTPUT);
+  }
+  String message;
+  char pButtonVal = 0;
+  char lastCharWritten = 0;
+  char buttonVal = 0;
+  buttonVal = getCharacter();
+  while(true){
+    while(buttonVal == 0){
+      buttonVal = getCharacter();
+      pButtonVal = 0;
+    }
+    while(buttonVal == 'e'){
+      buttonVal = getCharacter();
+      if(buttonVal != 'e')
+        return message;
+    }
+    if(buttonVal != pButtonVal){
+      message += buttonVal;
+      //Serial.println(message);
+    }
+    buttonVal = getCharacter();
+    //Serial.println(buttonVal);
+    pButtonVal = buttonVal;
+  }
+}
+
+char getCharacter(){
+  int iVal = 0;
+  int jVal = 0;
+  int returnChar = 0;
+  for(int i = 0; i <= 3; i++){
+    digitalWrite(columns[i], HIGH);
+    //Serial.print("Column: ");
+    //Serial.print(i);
+    for(int j = 0; j <= 3; j++){
+      //Serial.print(" Row: ");
+      //Serial.print(j);
+      int pinValue = analogRead(rows[j]);
+      //Serial.print("  pinValue: ");
+      //Serial.println(pinValue);
+      if(pinValue >= 500){
+        iVal = i+1;
+        jVal = j+1;
+        break;
+      }
+      //delay(10);
+    }
+    digitalWrite(columns[i], LOW);
+  }
+  if(iVal == 0 && jVal == 0)
+    returnChar = 0;
+  else
+    returnChar = charData[iVal-1][jVal-1];
+  //Serial.println(returnChar);
+  return returnChar;
+}
+
 void getPing(){
   response = "T ";
   while(command.length() > 1)
@@ -195,6 +261,13 @@ void readAnalogPin()
 
   }
   response += ";";
+}
+
+void keypad()
+{
+  response = "k ";
+  response += readKeypad();
+  response += " ;";
 }
 
 void writeToScreen()
