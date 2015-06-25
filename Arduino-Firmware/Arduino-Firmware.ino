@@ -13,6 +13,7 @@ fingerprint sensor
 #include <LiquidCrystal.h>
 #include <SoftwareSerial.h>
 #include <stdlib.h>
+#include <AccelStepper.h>
 
 
 
@@ -23,7 +24,7 @@ Adafruit_LSM303_Mag_Unified mag = Adafruit_LSM303_Mag_Unified(12345);
 Adafruit_L3GD20_Unified gyro = Adafruit_L3GD20_Unified(20);
 Adafruit_PWMServoDriver motor;
 Adafruit_PWMServoDriver servo;
-
+AccelStepper stepper;
 
 
 // Other Decs
@@ -89,6 +90,9 @@ void loop()
       case 'c':
         readMag();
         break;
+      case 'U':
+        runStepper();
+        break;
       case 'L':
         writeToScreen();
         break;
@@ -137,6 +141,9 @@ void configure()
         case 'g':
 
           break;
+        case 'U':
+          attachStepper();
+          break;
         case 'I':
           setupIMU();
           break;
@@ -161,6 +168,7 @@ void configure()
   }
 }
 
+<<<<<<< Updated upstream
 String readKeypad(){
   for(int i = 0; i <= 3; i++){
     pinMode(columns[i], OUTPUT);
@@ -219,6 +227,39 @@ char getCharacter(){
     returnChar = charData[iVal-1][jVal-1];
   //Serial.println(returnChar);
   return returnChar;
+}
+void attachStepper()
+{
+  index = command.indexOf(' ');
+  command = command.substring(index+1);
+  command.trim();
+  index = command.indexOf(' ');
+  int pinStep = command.substring(0, index).toInt();
+  command = command.substring(index+1);
+  command.trim();
+  index = command.indexOf(' ');
+  int pinDir = command.substring(0, index).toInt();
+
+  stepper = AccelStepper(1, pinStep, pinDir);
+
+  stepper.setMaxSpeed(2400);
+  stepper.setAcceleration(600);
+  response = "U " + String(pinStep) + " " + String(pinDir) + " ;";
+}
+
+void runStepper()
+{
+  index = command.indexOf(' ');
+  command = command.substring(index+1);
+  command.trim();
+  index = command.indexOf(' ');
+  int steps = command.substring(0, index).toInt();
+
+  stepper.move(steps);
+  while(stepper.distanceToGo())
+    stepper.run();
+  response = "U " + String(steps) + " ;";
+>>>>>>> Stashed changes
 }
 
 void getPing(){

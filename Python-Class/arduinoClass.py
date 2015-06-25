@@ -519,6 +519,30 @@ class Arduino(object):
         self.sendMsg(msg)
         self.recvMsg()
 
+    # attachStepper(self, pinStep, pinDir)
+    # REQUIRES CONFIG MODE
+    # Attaches a stepper motor driver on pinStep and pinDir
+    #
+    # Parameters:
+    # pinStep - the pin connected to the step pin of the driver
+    # pinDir - the pin connected to the direction pin of the driver
+    def attachStepper(self, pinStep, pinDir):
+        msg = "U " + pinStep + " " + pinDir + " ;"
+        self.sendMsg(msg)
+        self.recv.Msg()
+    # runStepper(self, steps)
+    # Runs the stepper motor a number of steps.
+    # This function call is blocking.
+    # Speed and Acceleration are set for NEMA17 2.3A Stepper Motor, 1/2 step
+    # 1 step (1/2 step) = 0.9 degrees
+    #
+    # Parameters:
+    # steps - the number of steps to move.
+    def runStepper(self, steps):
+        mgs = "U " + steps + " ;"
+        self.sendMsg(msg)
+        self.recvMsg()
+
     # configurePWMBoards(self, mode)
     # Sets up the Adafruit PWM boards for use with either of the motor controllers or servos.
     #
